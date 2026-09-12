@@ -1141,11 +1141,16 @@ html_content = f'''<!DOCTYPE html>
         </div>
 
         <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
-          <div class="basemap-toggle-wrap" title="Toggle Mapbox streetmap context and adjust tile opacity">
+          <div class="basemap-toggle-wrap" title="Toggle Mapbox city streets context, choose style and adjust opacity">
             <label style="display: flex; align-items: center; gap: 4px; cursor: pointer; user-select: none;">
               <input type="checkbox" id="chkBasemap" checked onchange="toggleBasemap(this.checked)" style="cursor: pointer;">
               <span>Streetmap</span>
             </label>
+            <select id="basemapStyleSelect" onchange="changeBasemapStyle(this.value)" style="border: 1px solid #D6CEBE; border-radius: 3px; font-size: 0.72rem; padding: 2px 4px; background: #FFFFFF; font-family: inherit; font-weight: 600; color: #333; cursor: pointer;">
+              <option value="streets-v12" selected>City Streets</option>
+              <option value="light-v11">Light Minimal</option>
+              <option value="outdoors-v12">Outdoors / Terrain</option>
+            </select>
             <input type="range" id="basemapOpacity" min="0.1" max="1.0" step="0.05" value="0.60" oninput="setBasemapOpacity(this.value)" title="Basemap Opacity">
           </div>
 
@@ -1240,9 +1245,10 @@ html_content = f'''<!DOCTYPE html>
       renderer: svgRenderer
     }});
 
-    // High-Definition Mapbox Light Basemap Layer (Public Web Token)
+    // High-Definition Mapbox City Streets Basemap Layer (Public Web Token)
     const _t = ['pk', 'eyJ1IjoidGVkeWlza2FuZGFyIiwiYSI6ImNseHNwM2llOTBoNWcybHM2NzR1b2R4NjMifQ', 'xuJ2vfgXr_Xgr-Q4XwXZNQ'].join('.');
-    const mapboxLayer = L.tileLayer(`https://api.mapbox.com/styles/v1/mapbox/light-v11/tiles/512/{{z}}/{{x}}/{{y}}@2x?access_token=${{_t}}`, {{
+    let currentBasemapStyle = 'streets-v12';
+    let mapboxLayer = L.tileLayer(`https://api.mapbox.com/styles/v1/mapbox/${{currentBasemapStyle}}/tiles/512/{{z}}/{{x}}/{{y}}@2x?access_token=${{_t}}`, {{
       tileSize: 512,
       zoomOffset: -1,
       maxZoom: 19,
@@ -1259,9 +1265,32 @@ html_content = f'''<!DOCTYPE html>
       }}
     }}
 
+    function changeBasemapStyle(styleId) {{
+      currentBasemapStyle = styleId;
+      const opacity = parseFloat(document.getElementById('basemapOpacity').value || 0.60);
+      const isChecked = document.getElementById('chkBasemap').checked;
+      
+      if (mapboxLayer && map.hasLayer(mapboxLayer)) {{
+        map.removeLayer(mapboxLayer);
+      }}
+      
+      mapboxLayer = L.tileLayer(`https://api.mapbox.com/styles/v1/mapbox/${{currentBasemapStyle}}/tiles/512/{{z}}/{{x}}/{{y}}@2x?access_token=${{_t}}`, {{
+        tileSize: 512,
+        zoomOffset: -1,
+        maxZoom: 19,
+        opacity: opacity,
+        crossOrigin: true
+      }});
+      
+      if (isChecked) {{
+        mapboxLayer.addTo(map);
+        mapboxLayer.bringToBack();
+      }}
+    }}
+
     function setBasemapOpacity(val) {{
       const opacity = parseFloat(val);
-      mapboxLayer.setOpacity(opacity);
+      if (mapboxLayer) mapboxLayer.setOpacity(opacity);
       const chk = document.getElementById('chkBasemap');
       if (chk && !chk.checked) {{
         chk.checked = true;
