@@ -1235,7 +1235,7 @@ html_content = f'''<!DOCTYPE html>
     let kelLayersMap = {{}};
 
     // Pure Mathematical Vector SVG Renderer (Never blurs on high-res rasterization)
-    const svgRenderer = L.svg({{ padding: 0.1 }});
+    const svgRenderer = L.svg({{ padding: 0 }});
 
     const map = L.map('mapViewport', {{
       attributionControl: false,
@@ -1903,7 +1903,7 @@ html_content = f'''<!DOCTYPE html>
       }}
     }});
 
-            // Bulletproof High-Res Poster Export with Pure Vector Rasterization & Exact Centering
+                // Bulletproof High-Res Poster Export with Pure Vector Rasterization & Exact Centering
     function exportPoster() {{
       const btn = document.getElementById('btnExport');
       btn.innerText = '⏳ Rendering 4K Poster...';
@@ -1946,21 +1946,6 @@ html_content = f'''<!DOCTYPE html>
                 basemapWrap.innerHTML = `<span style="font-size:0.75rem; font-weight:700; color:#666;">🗺️ Basemap: Off</span>`;
               }}
             }}
-
-            // Convert Leaflet 3D transforms to 2D transforms to preserve exact centering on rasterization
-            const transformElems = clonedDoc.querySelectorAll('.leaflet-map-pane, .leaflet-pane, .leaflet-tile-pane, .leaflet-overlay-pane, .leaflet-marker-pane');
-            transformElems.forEach(el => {{
-              const transform = window.getComputedStyle(el).transform;
-              if (transform && transform !== 'none') {{
-                const match = transform.match(/matrix\(([^)]+)\)/);
-                if (match) {{
-                  const parts = match[1].split(',').map(s => parseFloat(s.trim()));
-                  if (parts.length === 6) {{
-                    el.style.transform = `translate(${{parts[4]}}px, ${{parts[5]}}px)`;
-                  }}
-                }}
-              }}
-            }});
           }}
         }}).then(canvas => {{
           const link = document.createElement('a');
