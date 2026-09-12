@@ -1243,6 +1243,7 @@ html_content = f'''<!DOCTYPE html>
       scrollWheelZoom: false,
       doubleClickZoom: false,
       dragging: true,
+      zoomSnap: 0.05,
       renderer: svgRenderer
     }});
 
@@ -1483,14 +1484,15 @@ html_content = f'''<!DOCTYPE html>
     // Combined Feature Group of all map elements (Hexagons + Perimeter badges)
     const allMapElementsGroup = L.featureGroup([geojsonLayer, ...perimeterMarkers]);
 
-    // Function to calculate and fit all elements in exact mathematical center
+    // Symmetrical Absolute Mathematical Center of 261 Mainland Kelurahan & City Badges
+    const JAKARTA_CENTER_LAT = -6.1756;
+    const JAKARTA_CENTER_LON = 106.8400;
+    const JAKARTA_DEFAULT_ZOOM = 11.20;
+
     function centerMapBounds() {{
-      if (allMapElementsGroup && allMapElementsGroup.getBounds().isValid()) {{
-        map.fitBounds(allMapElementsGroup.getBounds(), {{
-          padding: [22, 22],
-          animate: false
-        }});
-      }}
+      map.setView([JAKARTA_CENTER_LAT, JAKARTA_CENTER_LON], JAKARTA_DEFAULT_ZOOM, {{
+        animate: false
+      }});
     }}
 
     centerMapBounds();
@@ -1901,7 +1903,7 @@ html_content = f'''<!DOCTYPE html>
       }}
     }});
 
-        // Bulletproof High-Res Poster Export with Pure Vector Rasterization & Exact Centering
+            // Bulletproof High-Res Poster Export with Pure Vector Rasterization & Exact Centering
     function exportPoster() {{
       const btn = document.getElementById('btnExport');
       btn.innerText = '⏳ Rendering 4K Poster...';
@@ -1944,6 +1946,21 @@ html_content = f'''<!DOCTYPE html>
                 basemapWrap.innerHTML = `<span style="font-size:0.75rem; font-weight:700; color:#666;">🗺️ Basemap: Off</span>`;
               }}
             }}
+
+            // Convert Leaflet 3D transforms to 2D transforms to preserve exact centering on rasterization
+            const transformElems = clonedDoc.querySelectorAll('.leaflet-map-pane, .leaflet-pane, .leaflet-tile-pane, .leaflet-overlay-pane, .leaflet-marker-pane');
+            transformElems.forEach(el => {{
+              const transform = window.getComputedStyle(el).transform;
+              if (transform && transform !== 'none') {{
+                const match = transform.match(/matrix\(([^)]+)\)/);
+                if (match) {{
+                  const parts = match[1].split(',').map(s => parseFloat(s.trim()));
+                  if (parts.length === 6) {{
+                    el.style.transform = `translate(${{parts[4]}}px, ${{parts[5]}}px)`;
+                  }}
+                }}
+              }}
+            }});
           }}
         }}).then(canvas => {{
           const link = document.createElement('a');
@@ -1960,7 +1977,7 @@ html_content = f'''<!DOCTYPE html>
           window.scrollTo(0, originalScrollY);
           alert('Export error, please try again.');
         }});
-      }}, 400);
+      }}, 350);
     }}
   </script>
 </body>
