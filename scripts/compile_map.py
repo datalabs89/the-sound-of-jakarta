@@ -1394,13 +1394,32 @@ html_content = f'''<!DOCTYPE html>
       }}
     }}).addTo(map);
 
-    // Internal City Boundaries Layer
+    // Dedicated Pane for City Boundaries to guarantee high contrast & persistence
+    map.createPane('cityBordersPane');
+    map.getPane('cityBordersPane').style.zIndex = 450;
+    map.getPane('cityBordersPane').style.pointerEvents = 'none';
+
+    // 1. High-Contrast Dark Outline Casing
+    const borderCasingLayer = L.geoJSON(bordersData, {{
+      pane: 'cityBordersPane',
+      renderer: svgRenderer,
+      style: {{
+        color: '#111111',
+        weight: 6.0,
+        opacity: 0.95,
+        lineCap: 'round',
+        lineJoin: 'round'
+      }}
+    }}).addTo(map);
+
+    // 2. Crisp White Inner Core Line (Double-Stroke Distinction)
     const borderLayer = L.geoJSON(bordersData, {{
+      pane: 'cityBordersPane',
       renderer: svgRenderer,
       style: {{
         color: '#FFFFFF',
-        weight: 3.5,
-        opacity: 0.95,
+        weight: 3.2,
+        opacity: 1.0,
         lineCap: 'round',
         lineJoin: 'round'
       }}
