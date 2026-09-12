@@ -6,7 +6,7 @@
   <title>The Voice of Jakarta | 2024 Presidential Election</title>
   
   <!-- SEO & Social OpenGraph Meta Tags -->
-  <meta name="description" content="The Voice of Jakarta: A high-density tessellated hexagonal cartogram analyzing candidate voting patterns across 261 mainland urban villages (Kelurahan) in the 2024 Indonesian Presidential Election.">
+  <meta name="description" content="The Voice of Jakarta: A high-density tessellated hexagonal cartogram analyzing candidate voting patterns across 261 mainland urban villages in the 2024 Indonesian Presidential Election.">
   <meta name="keywords" content="Jakarta Election 2024, Pilpres 2024 Jakarta, Hex Cartogram, Jakarta Datawrapper, Peta Pilpres Jakarta, KawalPemilu, Tedy Iskandar">
   <meta name="author" content="Tedy Iskandar">
   
@@ -14,14 +14,14 @@
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://datalabs89.github.io/the-sound-of-jakarta/">
   <meta property="og:title" content="The Voice of Jakarta | 2024 Presidential Election Cartogram">
-  <meta property="og:description" content="Interactive tessellated hexagonal election cartogram covering 261 mainland Kelurahan of DKI Jakarta. Explore victory margins, plurality winners, and turnout density.">
+  <meta property="og:description" content="Interactive tessellated hexagonal election cartogram covering 261 mainland urban villages of DKI Jakarta. Explore victory margins, plurality winners, and turnout density.">
   <meta property="og:image" content="https://datalabs89.github.io/the-sound-of-jakarta/The_Sound_of_Jakarta_Election_Map_4K.png">
 
   <!-- Twitter / X -->
   <meta property="twitter:card" content="summary_large_image">
   <meta property="twitter:url" content="https://datalabs89.github.io/the-sound-of-jakarta/">
   <meta property="twitter:title" content="The Voice of Jakarta | 2024 Presidential Election Cartogram">
-  <meta property="twitter:description" content="Interactive tessellated hexagonal election cartogram covering 261 mainland Kelurahan of DKI Jakarta. Explore victory margins, plurality winners, and turnout density.">
+  <meta property="twitter:description" content="Interactive tessellated hexagonal election cartogram covering 261 mainland urban villages of DKI Jakarta. Explore victory margins, plurality winners, and turnout density.">
   <meta property="twitter:image" content="https://datalabs89.github.io/the-sound-of-jakarta/The_Sound_of_Jakarta_Election_Map_4K.png">
   
   <!-- Classic Editorial Fonts -->
@@ -1184,7 +1184,7 @@
 
       <h1 class="dw-headline">The Voice of Jakarta</h1>
       <p class="dw-subheadline">
-        Across 261 mainland urban villages (Kelurahan), Prabowo and Anies divide the capital's presidential electoral map
+        Across 261 mainland urban villages, Prabowo and Anies divide the capital's presidential electoral map
       </p>
 
       <!-- SUMMARY KPI METRICS -->
@@ -1376,7 +1376,7 @@
         </ul>
 
         <!-- SEAT / KELURAHAN DISTRIBUTION SPECTRUM -->
-        <div class="spectrum-title" id="spectrumTitle">Urban Village Distribution Breakdown (261 Kelurahan total):</div>
+        <div class="spectrum-title" id="spectrumTitle">Urban Village Distribution Breakdown (261 total):</div>
         <div class="spectrum-bar" id="spectrumBar">
           <div class="spec-segment" id="specAnies" style="width: 45.6%; background: var(--c-anies);" title="Anies: 119 Villages"></div>
           <div class="spec-segment" id="specClose" style="width: 13.4%; background: var(--c-close);" title="Close: 35 Villages"></div>
@@ -1400,7 +1400,7 @@
     <!-- FOOTER SECTION -->
     <div class="dw-footer">
       <div class="dw-credits">
-        *Includes all 261 urban villages (Kelurahan) across the 5 mainland administrative cities of DKI Jakarta (Excl. Thousand Islands)<br>
+        *Includes all 261 urban villages across the 5 mainland administrative cities of DKI Jakarta (Excl. Thousand Islands)<br>
         <strong>Design:</strong> Tedy Iskandar &middot; <strong>Data Source:</strong> KawalPemilu.org / KPU RI (2024 Presidential Election Certified Results)<br>
         <strong>Format:</strong> Tessellated Hexagonal Tile Cartogram
       </div>
@@ -1414,11 +1414,11 @@
 
   <!-- MOBILE BOTTOM SHEET DETAIL DRAWER (P2) -->
   <div id="mobileDrawerBackdrop" class="drawer-backdrop" onclick="closeMobileDrawer()"></div>
-  <div id="mobileDetailDrawer" class="mobile-drawer" role="dialog" aria-modal="true" aria-label="Kelurahan Details">
+  <div id="mobileDetailDrawer" class="mobile-drawer" role="dialog" aria-modal="true" aria-label="Urban Village Details">
     <div class="drawer-drag-pill" onclick="closeMobileDrawer()"></div>
     <div class="drawer-header">
       <div class="drawer-title-box">
-        <h3 id="drawerTitle" class="drawer-title">Kelurahan</h3>
+        <h3 id="drawerTitle" class="drawer-title">Urban Village</h3>
         <div id="drawerSub" class="drawer-sub"><span class="tt-geo">Kecamatan, Kota</span> &middot; <span class="tt-margin">Margin</span></div>
       </div>
       <button class="drawer-close-btn" onclick="closeMobileDrawer()" aria-label="Close drawer">✕</button>
@@ -1903,7 +1903,7 @@
       const titlePrefix = cityName ? cityName : "Urban Village";
 
       if (mode === 'plurality') {
-        titleElem.innerText = `${titlePrefix} Plurality Distribution (${total} Kelurahan total):`;
+        titleElem.innerText = `${titlePrefix} Plurality Distribution (${total} total):`;
         let anies = 0, prabowo = 0, close = 0, ganjar = 0;
         filtered.forEach(f => {
           const w = f.properties.winner;
@@ -1932,7 +1932,7 @@
           ${ganjar > 0 ? `<span><b>03 Ganjar:</b> ${ganjar} Vil (${pG}%)</span>` : ''}
         `;
       } else if (mode === 'margin') {
-        titleElem.innerText = `${titlePrefix} Victory Margin Strength (${total} Kelurahan total):`;
+        titleElem.innerText = `${titlePrefix} Victory Margin Strength (${total} total):`;
         let aHigh = 0, aMod = 0, close = 0, pMod = 0, pHigh = 0, gLead = 0;
         filtered.forEach(f => {
           const p = f.properties;
@@ -1974,7 +1974,7 @@
           ${gLead > 0 ? `<span><b>03 &gt;2%:</b> ${gLead} (${pgL}%)</span>` : ''}
         `;
       } else if (mode === 'close') {
-        titleElem.innerText = `${titlePrefix} Battleground vs Decisive Margins (${total} Kelurahan total):`;
+        titleElem.innerText = `${titlePrefix} Battleground vs Decisive Margins (${total} total):`;
         let battleground = 0, decisive = 0;
         filtered.forEach(f => {
           if (f.properties.diff <= 2.0) battleground++;
@@ -1994,7 +1994,7 @@
           <span><b>Decisive Margin (&gt;2% diff):</b> ${decisive} Vil (${pD}%)</span>
         `;
       } else if (mode === 'density') {
-        titleElem.innerText = `${titlePrefix} Voter Turnout Volume Density (${total} Kelurahan total):`;
+        titleElem.innerText = `${titlePrefix} Voter Turnout Volume Density (${total} total):`;
         let vHigh = 0, high = 0, mod = 0, low = 0;
         filtered.forEach(f => {
           const tot = f.properties.total_votes;

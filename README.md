@@ -1,6 +1,6 @@
 # The Voice of Jakarta — 2024 Presidential Election Cartogram
 
-> **An interactive, publication-grade tessellated hexagonal cartogram analyzing the 2024 Indonesian Presidential Election across 261 mainland urban villages (*Kelurahan*) of DKI Jakarta.**
+> **An interactive, publication-grade tessellated hexagonal cartogram analyzing the 2024 Indonesian Presidential Election across 261 mainland urban villages of DKI Jakarta.**
 
 [![GitHub Pages](https://img.shields.io/badge/Live%20Demo-GitHub%20Pages-success?style=for-the-badge&logo=github)](https://datalabs89.github.io/the-sound-of-jakarta/)
 [![Leaflet](https://img.shields.io/badge/Leaflet-1.9.4-199900?style=for-the-badge&logo=leaflet&logoColor=white)](https://leafletjs.com/)
@@ -17,7 +17,7 @@ Experience the live interactive map directly in your browser:
 
 ## 📖 Executive Summary & Electoral Narrative
 
-In the 2024 Indonesian Presidential Election, the capital territory of **DKI Jakarta** emerged as the nation's most closely contested battlefield. Across **5,524,091 certified valid ballots** cast across **261 mainland urban villages (*Kelurahan*)**, the electorate was divided between two opposing political coalitions:
+In the 2024 Indonesian Presidential Election, the capital territory of **DKI Jakarta** emerged as the nation's most closely contested battlefield. Across **5,524,091 certified valid ballots** cast across **261 mainland urban villages**, the electorate was divided between two opposing political coalitions:
 
 * **01 Anies Baswedan – Muhaimin Iskandar**: **41.64%** *(2,338,237 votes)* — Plurality leader in **119 Villages (45.6%)** *(132 villages overall)*
 * **02 Prabowo Subianto – Gibran Rakabuming Raka**: **41.15%** *(2,311,122 votes)* — Plurality leader in **105 Villages (40.2%)** *(126 villages overall)*
@@ -52,7 +52,7 @@ Interactive cards allow instant navigation to notable electoral extremes:
 * **🔵 Strongest 02 Stronghold**: **Kapuk (West Jakarta)** — Prabowo 56.5% vs Anies 25.0% (+31.5% lead, 42,500 ballots).
 
 ### 3. 🔍 Instant Search & Keyboard Navigation
-* Search 261 kelurahans in real-time with automatic highlighting.
+* Search 261 urban villages in real-time with automatic highlighting.
 * Includes dedicated **✕** clear button and full keyboard **Escape** shortcut support to reset filters instantly.
 
 ### 4. 📊 6-Column City Drilldown & Dynamic Proportion Spectrum
@@ -63,7 +63,7 @@ Interactive cards allow instant navigation to notable electoral extremes:
 * One-click poster generation exporting a **~3,920px wide (4K / 300+ DPI)** high-resolution PNG.
 * Powered by mathematical **SVG Vector rendering** with Leaflet DOM matrix transform normalization for zero-drift, razor-sharp output.
 
-### 6. 🏷️ Dynamic Hexagon Kelurahan Text Labels
+### 6. 🏷️ Dynamic Hexagon Urban Village Text Labels
 * Auto-appearing urban village text labels on hex cells when zooming in ($\ge 11.60$) or toggled manually via the `🏷️ Labels` toolbar button.
 * Built with 2-line title-case smart typography and white cartographic halos (`text-shadow`) to maintain razor-sharp legibility over any background color.
 
