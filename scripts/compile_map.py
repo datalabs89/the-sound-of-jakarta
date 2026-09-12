@@ -213,6 +213,25 @@ html_content = f'''<!DOCTYPE html>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>The sound of Jakarta | 2024 Presidential Election</title>
   
+  <!-- SEO & Social OpenGraph Meta Tags -->
+  <meta name="description" content="The Sound of Jakarta: A high-density tessellated hexagonal cartogram analyzing candidate voting patterns across 261 mainland urban villages (Kelurahan) in the 2024 Indonesian Presidential Election.">
+  <meta name="keywords" content="Jakarta Election 2024, Pilpres 2024 Jakarta, Hex Cartogram, Jakarta Datawrapper, Peta Pilpres Jakarta, KawalPemilu, Tedy Iskandar">
+  <meta name="author" content="Tedy Iskandar">
+  
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://datalabs89.github.io/the-sound-of-jakarta/">
+  <meta property="og:title" content="The Sound of Jakarta | 2024 Presidential Election Cartogram">
+  <meta property="og:description" content="Interactive tessellated hexagonal election cartogram covering 261 mainland Kelurahan of DKI Jakarta. Explore victory margins, plurality winners, and turnout density.">
+  <meta property="og:image" content="https://datalabs89.github.io/the-sound-of-jakarta/The_Sound_of_Jakarta_Election_Map_4K.png">
+
+  <!-- Twitter / X -->
+  <meta property="twitter:card" content="summary_large_image">
+  <meta property="twitter:url" content="https://datalabs89.github.io/the-sound-of-jakarta/">
+  <meta property="twitter:title" content="The Sound of Jakarta | 2024 Presidential Election Cartogram">
+  <meta property="twitter:description" content="Interactive tessellated hexagonal election cartogram covering 261 mainland Kelurahan of DKI Jakarta. Explore victory margins, plurality winners, and turnout density.">
+  <meta property="twitter:image" content="https://datalabs89.github.io/the-sound-of-jakarta/The_Sound_of_Jakarta_Election_Map_4K.png">
+  
   <!-- Classic Editorial Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1112,7 +1131,7 @@ html_content = f'''<!DOCTYPE html>
         </div>
       </div>
 
-      <!-- INTERACTIVE TOOLBAR (VIEW SWITCHER & SEARCH) -->
+      <!-- INTERACTIVE TOOLBAR (VIEW SWITCHER, BASEMAP TOGGLE, & QUICK SEARCH) -->
       <div class="toolbar-area">
         <div class="view-toggles">
           <button class="toggle-btn active" id="btnPlurality" onclick="switchView('plurality')">Plurality Winner</button>
@@ -1121,10 +1140,21 @@ html_content = f'''<!DOCTYPE html>
           <button class="toggle-btn" id="btnDensity" onclick="switchView('density')">Voter Density</button>
         </div>
 
-        <div class="search-box-wrap">
-          <span class="search-icon">🔍</span>
-          <input type="text" id="kelSearchInput" class="search-input" placeholder="Search urban village (e.g. Menteng)..." oninput="searchKelurahan(this.value)">
-          <button id="searchClearBtn" class="search-clear-btn" onclick="clearSearch()" title="Clear search (Esc)">✕</button>
+        <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+          <div class="basemap-toggle-wrap" title="Toggle Mapbox streetmap context and adjust tile opacity">
+            <label style="display: flex; align-items: center; gap: 4px; cursor: pointer; user-select: none;">
+              <input type="checkbox" id="chkBasemap" checked onchange="toggleBasemap(this.checked)" style="cursor: pointer;">
+              <span>Streetmap</span>
+            </label>
+            <input type="range" id="basemapOpacity" min="0.1" max="1.0" step="0.05" value="0.60" oninput="setBasemapOpacity(this.value)" title="Basemap Opacity">
+          </div>
+
+          <div class="search-box-wrap">
+            <span class="search-icon">🔍</span>
+            <input type="text" id="kelSearchInput" class="search-input" placeholder="Search urban village (e.g. Menteng)..." oninput="handleSearchInput(this.value)" onfocus="handleSearchInput(this.value)" onkeydown="handleSearchKeydown(event)" autocomplete="off">
+            <button id="searchClearBtn" class="search-clear-btn" onclick="clearSearch()" title="Clear search (Esc)">✕</button>
+            <div id="searchDropdown" class="search-dropdown"></div>
+          </div>
         </div>
       </div>
 
@@ -1212,13 +1242,32 @@ html_content = f'''<!DOCTYPE html>
 
     // High-Definition Mapbox Light Basemap Layer (Public Web Token)
     const _t = ['pk', 'eyJ1IjoidGVkeWlza2FuZGFyIiwiYSI6ImNseHNwM2llOTBoNWcybHM2NzR1b2R4NjMifQ', 'xuJ2vfgXr_Xgr-Q4XwXZNQ'].join('.');
-    L.tileLayer(`https://api.mapbox.com/styles/v1/mapbox/light-v11/tiles/512/{{z}}/{{x}}/{{y}}@2x?access_token=${{_t}}`, {{
+    const mapboxLayer = L.tileLayer(`https://api.mapbox.com/styles/v1/mapbox/light-v11/tiles/512/{{z}}/{{x}}/{{y}}@2x?access_token=${{_t}}`, {{
       tileSize: 512,
       zoomOffset: -1,
       maxZoom: 19,
       opacity: 0.60,
       crossOrigin: true
     }}).addTo(map);
+
+    function toggleBasemap(enabled) {{
+      if (enabled) {{
+        if (!map.hasLayer(mapboxLayer)) map.addLayer(mapboxLayer);
+        mapboxLayer.bringToBack();
+      }} else {{
+        if (map.hasLayer(mapboxLayer)) map.removeLayer(mapboxLayer);
+      }}
+    }}
+
+    function setBasemapOpacity(val) {{
+      const opacity = parseFloat(val);
+      mapboxLayer.setOpacity(opacity);
+      const chk = document.getElementById('chkBasemap');
+      if (chk && !chk.checked) {{
+        chk.checked = true;
+        toggleBasemap(true);
+      }}
+    }}
 
     // =========================================================================
     // 1. 261 HEXAGON CHOROPLETH CELLS LAYER (PURE VECTOR SVG)
@@ -1395,7 +1444,7 @@ html_content = f'''<!DOCTYPE html>
     // 3. SATELLITE ADMINISTRATIVE REGIONS (BODETABEK & JAVA SEA)
     // =========================================================================
     const satelliteRegions = [
-      {{ name: '🌊 JAVA SEA (KEP. SERIBU)', lat: -6.015, lon: 106.840, isSea: true }},
+      {{ name: '🌊 JAVA SEA (EXCL. KEP. SERIBU)', lat: -6.015, lon: 106.840, isSea: true }},
       {{ name: '📍 TANGERANG CITY', lat: -6.175, lon: 106.605, isSea: false }},
       {{ name: '📍 SOUTH TANGERANG (BSD)', lat: -6.290, lon: 106.655, isSea: false }},
       {{ name: '📍 DEPOK & BOGOR REGENCY', lat: -6.345, lon: 106.840, isSea: false }},
@@ -1534,18 +1583,15 @@ html_content = f'''<!DOCTYPE html>
       updateSpectrumBar(cityName);
     }}
 
-    // Real-time Search functionality with Clear button
-    function searchKelurahan(query) {{
+    // Enhanced Autocomplete & Search with Fly-To Pulse Focus
+    function handleSearchInput(query) {{
       const q = query.trim().toUpperCase();
       const clearBtn = document.getElementById('searchClearBtn');
+      const dropdown = document.getElementById('searchDropdown');
       if (clearBtn) clearBtn.style.display = q ? 'flex' : 'none';
 
-      if (currentFocusedLayer) {{
-        currentFocusedLayer.closeTooltip();
-        currentFocusedLayer = null;
-      }}
-
       if (!q) {{
+        if (dropdown) dropdown.style.display = 'none';
         geojsonLayer.eachLayer(l => {{
           geojsonLayer.resetStyle(l);
           l.closeTooltip();
@@ -1553,9 +1599,38 @@ html_content = f'''<!DOCTYPE html>
         return;
       }}
 
+      // Filter matching kelurahan
+      const matches = [];
+      geojsonData.features.forEach(f => {{
+        const kel = f.properties.kelurahan;
+        const kec = f.properties.kecamatan;
+        const kota = f.properties.kota;
+        if (kel.toUpperCase().includes(q) || kec.toUpperCase().includes(q)) {{
+          matches.push(f.properties);
+        }}
+      }});
+
+      // Render autocomplete dropdown
+      if (dropdown) {{
+        if (matches.length > 0) {{
+          dropdown.innerHTML = matches.slice(0, 7).map(m => `
+            <div class="search-dropdown-item" onclick="selectSearchedKelurahan('${{m.kelurahan}}')">
+              <span class="item-name">${{m.kelurahan}}</span>
+              <span class="item-meta">${{m.kecamatan}}, ${{m.kota}}</span>
+            </div>
+          `).join('');
+          dropdown.style.display = 'block';
+        }} else {{
+          dropdown.innerHTML = '<div class="search-dropdown-item" style="color:#888; cursor:default;">No matching urban village found</div>';
+          dropdown.style.display = 'block';
+        }}
+      }}
+
+      // Highlight matched hexes on map
       geojsonLayer.eachLayer(layer => {{
         const name = layer.feature.properties.kelurahan.toUpperCase();
-        if (name.includes(q)) {{
+        const kec = layer.feature.properties.kecamatan.toUpperCase();
+        if (name.includes(q) || kec.includes(q)) {{
           layer.setStyle({{
             weight: 3.5,
             color: '#000000',
@@ -1573,17 +1648,52 @@ html_content = f'''<!DOCTYPE html>
       }});
     }}
 
+    function handleSearchKeydown(e) {{
+      if (e.key === 'Enter') {{
+        const dropdown = document.getElementById('searchDropdown');
+        const firstItem = dropdown ? dropdown.querySelector('.search-dropdown-item') : null;
+        if (firstItem && firstItem.querySelector('.item-name')) {{
+          selectSearchedKelurahan(firstItem.querySelector('.item-name').innerText);
+        }}
+      }} else if (e.key === 'Escape') {{
+        clearSearch();
+      }}
+    }}
+
+    function selectSearchedKelurahan(kelName) {{
+      const input = document.getElementById('kelSearchInput');
+      const dropdown = document.getElementById('searchDropdown');
+      if (input) input.value = kelName;
+      if (dropdown) dropdown.style.display = 'none';
+      focusKelurahan(kelName);
+    }}
+
     function clearSearch() {{
       const input = document.getElementById('kelSearchInput');
-      if (input) {{
-        input.value = '';
-        searchKelurahan('');
-      }}
+      const dropdown = document.getElementById('searchDropdown');
+      if (input) input.value = '';
+      if (dropdown) dropdown.style.display = 'none';
+      const clearBtn = document.getElementById('searchClearBtn');
+      if (clearBtn) clearBtn.style.display = 'none';
+
       if (currentFocusedLayer) {{
         currentFocusedLayer.closeTooltip();
         currentFocusedLayer = null;
       }}
+      geojsonLayer.eachLayer(l => {{
+        geojsonLayer.resetStyle(l);
+        l.closeTooltip();
+      }});
     }}
+
+    // Hide dropdown on document click
+    document.addEventListener('click', function(e) {{
+      const searchBox = document.querySelector('.search-box-wrap');
+      const dropdown = document.getElementById('searchDropdown');
+      if (dropdown && searchBox && !searchBox.contains(e.target)) {{
+        dropdown.style.display = 'none';
+      }}
+    }});
 
     // Click-to-Focus on Extremes cards (Strict Single Tooltip Focus)
     function focusKelurahan(kelName) {{
