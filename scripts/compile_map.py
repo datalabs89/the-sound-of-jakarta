@@ -788,8 +788,8 @@ html_content = f'''<!DOCTYPE html>
 
     /* LITE EDITORIAL STREETMAP BASE TILE LAYER */
     .leaflet-tile-pane {{
-      opacity: 0.52;
-      filter: grayscale(88%) contrast(85%) brightness(101%) sepia(10%);
+      opacity: 0.55;
+      filter: grayscale(100%) contrast(88%) brightness(102%);
     }}
 
     /* SURROUNDING SATELLITE ADMINISTRATIVE REGION BADGES (BODETABEK & JAVA SEA) */
@@ -1951,6 +1951,32 @@ html_content = f'''<!DOCTYPE html>
                 basemapWrap.innerHTML = `<span style="font-size:0.75rem; font-weight:700; color:#666;">🗺️ Basemap: Off</span>`;
               }}
             }}
+
+            // Convert all active streetmap tile images to true pixel grayscale for export
+            const tileImages = clonedDoc.querySelectorAll('.leaflet-tile-pane img');
+            tileImages.forEach(img => {{
+              try {{
+                if (img.complete && img.naturalWidth > 0) {{
+                  const c = document.createElement('canvas');
+                  c.width = img.naturalWidth || 512;
+                  c.height = img.naturalHeight || 512;
+                  const ctx = c.getContext('2d');
+                  ctx.drawImage(img, 0, 0);
+                  const imgData = ctx.getImageData(0, 0, c.width, c.height);
+                  const d = imgData.data;
+                  for (let i = 0; i < d.length; i += 4) {{
+                    const gray = Math.round(0.299 * d[i] + 0.587 * d[i+1] + 0.114 * d[i+2]);
+                    d[i] = gray;
+                    d[i+1] = gray;
+                    d[i+2] = gray;
+                  }}
+                  ctx.putImageData(imgData, 0, 0);
+                  img.src = c.toDataURL('image/png');
+                }}
+              }} catch (e) {{
+                console.warn('Tile grayscale raster note:', e);
+              }}
+            }});
           }}
         }}).then(canvas => {{
           const link = document.createElement('a');
