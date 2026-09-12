@@ -447,9 +447,9 @@ html_content = f'''<!DOCTYPE html>
     }}
 
     .city-card-name {{
-      font-size: 0.73rem;
+      font-size: 0.76rem;
       font-weight: 800;
-      letter-spacing: 0.02em;
+      letter-spacing: 0.025em;
       text-transform: uppercase;
       color: #111;
       margin-bottom: 3px;
@@ -459,7 +459,7 @@ html_content = f'''<!DOCTYPE html>
     }}
 
     .city-card-count {{
-      font-size: 0.72rem;
+      font-size: 0.73rem;
       color: #555;
       border-bottom: 1px solid #EAE5DC;
       padding-bottom: 3px;
@@ -469,7 +469,7 @@ html_content = f'''<!DOCTYPE html>
     }}
 
     .city-card-lead {{
-      font-size: 0.69rem;
+      font-size: 0.75rem;
       font-weight: 700;
       white-space: nowrap;
       overflow: hidden;
@@ -553,12 +553,12 @@ html_content = f'''<!DOCTYPE html>
     }}
 
     .extreme-card .ex-hint {{
-      font-size: 0.62rem;
+      font-size: 0.68rem;
       font-weight: 700;
       color: #666056;
       background: #EFECE5;
       border: 1px solid #DFD9CE;
-      padding: 1.5px 6px;
+      padding: 2px 7px;
       border-radius: 10px;
       letter-spacing: 0.02em;
       text-transform: none;
