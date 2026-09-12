@@ -1030,7 +1030,7 @@ html_content = f'''<!DOCTYPE html>
         <div class="city-card all-city active" id="card-ALL" onclick="filterCity(null)">
           <div class="city-card-name">All Jakarta</div>
           <div class="city-card-count">261 Villages</div>
-          <div class="city-card-lead all">01 Lead: 132 Vil (50.6%)</div>
+          <div class="city-card-lead all">Complete Map</div>
         </div>
 
         <div class="city-card" id="card-JAKARTA-UTARA" onclick="filterCity('JAKARTA UTARA')">
