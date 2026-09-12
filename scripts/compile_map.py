@@ -767,6 +767,12 @@ html_content = f'''<!DOCTYPE html>
       font-family: inherit;
     }}
 
+    /* LITE EDITORIAL STREETMAP BASE TILE LAYER */
+    .leaflet-tile-pane {{
+      opacity: 0.52;
+      filter: grayscale(88%) contrast(85%) brightness(101%) sepia(10%);
+    }}
+
     /* SURROUNDING SATELLITE ADMINISTRATIVE REGION BADGES (BODETABEK & JAVA SEA) */
     .surrounding-region-label {{
       background: transparent;
@@ -1203,6 +1209,14 @@ html_content = f'''<!DOCTYPE html>
       dragging: true,
       renderer: svgRenderer
     }});
+
+    // Subtle Lite Streetmap Layer (CartoDB Positron No-Labels)
+    L.tileLayer('https://{{s}}.basemaps.cartocdn.com/light_nolabels/{{z}}/{{x}}/{{y}}{{r}}.png', {{
+      subdomains: 'abcd',
+      maxZoom: 19,
+      opacity: 0.70,
+      crossOrigin: true
+    }}).addTo(map);
 
     // =========================================================================
     // 1. 261 HEXAGON CHOROPLETH CELLS LAYER (PURE VECTOR SVG)
