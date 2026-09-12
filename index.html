@@ -1195,18 +1195,20 @@
       }
     }).addTo(map);
 
-    // Dedicated Pane for City Boundaries (Pure Solid White, without black outline)
+    // Dedicated Pane for City Boundaries (Guaranteed Top Z-Index & Dedicated SVG Renderer)
     map.createPane('cityBordersPane');
-    map.getPane('cityBordersPane').style.zIndex = 450;
+    map.getPane('cityBordersPane').style.zIndex = 650;
     map.getPane('cityBordersPane').style.pointerEvents = 'none';
 
-    // Solid Bold Pure White City Boundaries Layer
+    const borderSvgRenderer = L.svg({ pane: 'cityBordersPane', padding: 0 });
+
+    // Solid Bold Pure White City Boundaries Layer (Always prominently above hex cells)
     const borderLayer = L.geoJSON(bordersData, {
       pane: 'cityBordersPane',
-      renderer: svgRenderer,
+      renderer: borderSvgRenderer,
       style: {
         color: '#FFFFFF',
-        weight: 4.5,
+        weight: 5.5,
         opacity: 1.0,
         lineCap: 'round',
         lineJoin: 'round'
