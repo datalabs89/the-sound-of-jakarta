@@ -776,33 +776,167 @@
       filter: grayscale(100%) opacity(1.0);
     }
 
-    /* RESPONSIVE MEDIA QUERIES FOR MOBILE/TABLET */
-    @media (max-width: 768px) {
+    /* =========================================================================
+       COMPREHENSIVE MULTI-DEVICE RESPONSIVE BREAKPOINTS (MOBILE / TABLET / DESKTOP)
+       ========================================================================= */
+    @media (max-width: 1024px) {
       .dw-editorial-artboard {
-        padding: 24px 18px;
+        padding: 28px 22px;
+      }
+      .city-summary-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 8px;
+      }
+      #mapViewport {
+        height: 580px;
+      }
+    }
+
+    @media (max-width: 768px) {
+      body {
+        padding: 8px 4px;
+      }
+      .dw-editorial-artboard {
+        padding: 18px 12px;
+        border-radius: 2px;
+      }
+      .header-top-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+      }
+      .export-btn {
+        align-self: flex-start;
+        width: 100%;
+        text-align: center;
+        padding: 9px 12px;
       }
       h1.dw-headline {
-        font-size: 2.1rem;
+        font-size: clamp(1.60rem, 5.5vw, 2.2rem);
+        letter-spacing: -0.02em;
+        line-height: 1.15;
+      }
+      .dw-subheadline {
+        font-size: 0.90rem;
+        line-height: 1.45;
+        margin-bottom: 16px;
       }
       .stats-bar {
         grid-template-columns: 1fr 1fr;
-        gap: 10px;
+        gap: 8px;
+        margin-bottom: 16px;
+      }
+      .stat-box {
+        padding: 10px 12px;
+      }
+      .stat-val {
+        font-size: 1.25rem;
       }
       .city-summary-grid {
-        grid-template-columns: 1fr 1fr 1fr;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 6px;
+        margin-bottom: 16px;
+      }
+      .city-card {
+        padding: 8px 10px;
+      }
+      .city-card-name {
+        font-size: 0.82rem;
+      }
+      .city-card-count {
+        font-size: 0.70rem;
+      }
+      .city-card-lead {
+        font-size: 0.68rem;
+        padding: 2px 4px;
       }
       .storyline-strip, .extremes-strip {
         grid-template-columns: 1fr;
+        gap: 8px;
+        margin-bottom: 16px;
       }
       .toolbar-area {
         flex-direction: column;
         align-items: stretch;
+        gap: 10px;
+        margin-bottom: 16px;
+      }
+      .view-toggles {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 6px;
+        width: 100%;
+      }
+      .toggle-btn {
+        width: 100%;
+        text-align: center;
+        padding: 7px 6px;
+        font-size: 0.75rem;
+      }
+      .basemap-toggle-wrap {
+        width: 100%;
+        justify-content: space-between;
+        padding: 7px 10px;
+        box-sizing: border-box;
       }
       .search-box-wrap {
         width: 100%;
+        min-width: 100%;
+      }
+      .search-input {
+        width: 100%;
+        padding: 8px 30px 8px 32px;
+        font-size: 0.85rem;
+        box-sizing: border-box;
+      }
+      .legend-card {
+        padding: 14px 12px;
+        margin-bottom: 16px;
+      }
+      .legend-list {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+      .spectrum-labels {
+        flex-wrap: wrap;
+        gap: 6px;
+        font-size: 0.70rem;
       }
       #mapViewport {
-        height: 520px;
+        height: 480px;
+      }
+      .city-perimeter-label {
+        padding: 3px 7px;
+        font-size: 0.70rem;
+        gap: 4px;
+      }
+      .city-perimeter-label .c-name {
+        font-size: 0.70rem;
+      }
+      .city-perimeter-label .c-badge {
+        font-size: 0.65rem;
+        padding: 1px 4px;
+      }
+      .dw-footer {
+        flex-direction: column-reverse;
+        gap: 14px;
+        align-items: flex-start;
+      }
+      .brand-logo-datalabs {
+        height: 30px;
+      }
+    }
+
+    @media (max-width: 420px) {
+      .stats-bar {
+        grid-template-columns: 1fr;
+      }
+      .city-summary-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+      #mapViewport {
+        height: 400px;
       }
     }
   </style>
@@ -1290,15 +1424,34 @@
     // Symmetrical Absolute Mathematical Center of 261 Mainland Kelurahan & City Badges
     const JAKARTA_CENTER_LAT = -6.1756;
     const JAKARTA_CENTER_LON = 106.8400;
-    const JAKARTA_DEFAULT_ZOOM = 11.20;
+
+    function getResponsiveZoom() {
+      const w = window.innerWidth;
+      if (w >= 1200) return 11.20;
+      if (w >= 992) return 11.00;
+      if (w >= 768) return 10.70;
+      if (w >= 480) return 10.35;
+      return 9.95;
+    }
 
     function centerMapBounds() {
-      map.setView([JAKARTA_CENTER_LAT, JAKARTA_CENTER_LON], JAKARTA_DEFAULT_ZOOM, {
+      const zoom = getResponsiveZoom();
+      map.setView([JAKARTA_CENTER_LAT, JAKARTA_CENTER_LON], zoom, {
         animate: false
       });
     }
 
     centerMapBounds();
+
+    // Dynamic Viewport Resize & Orientation Change Auto-Calibrator
+    let resizeDebounce;
+    window.addEventListener('resize', () => {
+      clearTimeout(resizeDebounce);
+      resizeDebounce = setTimeout(() => {
+        map.invalidateSize();
+        centerMapBounds();
+      }, 120);
+    });
 
         // Switch View modes
     function switchView(mode) {
