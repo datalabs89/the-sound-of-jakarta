@@ -944,6 +944,7 @@
               <option value="outdoors-v12">Outdoors / Terrain</option>
             </select>
             <input type="range" id="basemapOpacity" min="0.1" max="1.0" step="0.05" value="0.60" oninput="setBasemapOpacity(this.value)" title="Basemap Opacity">
+            <span id="opacityValBadge" style="font-size: 0.70rem; color: #555; font-weight: 700; min-width: 26px;">60%</span>
           </div>
 
           <div class="search-box-wrap">
@@ -1083,6 +1084,8 @@
     function setBasemapOpacity(val) {
       const opacity = parseFloat(val);
       if (mapboxLayer) mapboxLayer.setOpacity(opacity);
+      const badge = document.getElementById('opacityValBadge');
+      if (badge) badge.innerText = Math.round(opacity * 100) + '%';
       const chk = document.getElementById('chkBasemap');
       if (chk && !chk.checked) {
         chk.checked = true;
@@ -1269,11 +1272,12 @@
 
     // Satellite region badges removed as requested
 
-    // Function to calculate and fit all elements in center
+    // Function to calculate and fit all elements in exact symmetrical center
     function centerMapBounds() {
+      // Symmetrical center longitude: 106.840, center latitude: -6.175
       const symmetricBounds = L.latLngBounds(
-        L.latLng(-6.355, 106.595),
-        L.latLng(-6.005, 107.085)
+        L.latLng(-6.325, 106.615),
+        L.latLng(-6.025, 107.065)
       );
       map.fitBounds(symmetricBounds, {
         padding: [10, 10],
@@ -1284,7 +1288,7 @@
 
     centerMapBounds();
 
-    // Switch View modes
+        // Switch View modes
     function switchView(mode) {
       currentMode = mode;
       document.querySelectorAll('.toggle-btn').forEach(b => b.classList.remove('active'));
@@ -1330,39 +1334,135 @@
       }
 
       geojsonLayer.eachLayer(l => geojsonLayer.resetStyle(l));
+      updateSpectrumBar(selectedCity, mode);
     }
 
-    // Dynamic Spectrum Bar Update on City Filter
-    function updateSpectrumBar(cityName) {
-      let anies = 0, prabowo = 0, close = 0, ganjar = 0, total = 0;
+    // Dynamic Multi-View Distribution Spectrum Slider Update
+    function updateSpectrumBar(cityName, mode) {
+      mode = mode || currentMode;
+      const barContainer = document.getElementById('spectrumBar');
+      const labelsContainer = document.getElementById('spectrumLabels');
+      const titleElem = document.getElementById('spectrumTitle');
       
-      geojsonData.features.forEach(f => {
-        if (!cityName || f.properties.kota === cityName) {
-          total++;
+      const filtered = geojsonData.features.filter(f => !cityName || f.properties.kota === cityName);
+      const total = filtered.length;
+      const titlePrefix = cityName ? cityName : "Urban Village";
+
+      if (mode === 'plurality') {
+        titleElem.innerText = `${titlePrefix} Plurality Distribution (${total} Kelurahan total):`;
+        let anies = 0, prabowo = 0, close = 0, ganjar = 0;
+        filtered.forEach(f => {
           const w = f.properties.winner;
           if (w.includes("Close")) close++;
           else if (w.includes("Anies")) anies++;
           else if (w.includes("Prabowo")) prabowo++;
           else if (w.includes("Ganjar")) ganjar++;
-        }
-      });
+        });
 
-      const pAnies = ((anies / total) * 100).toFixed(1);
-      const pClose = ((close / total) * 100).toFixed(1);
-      const pPrabowo = ((prabowo / total) * 100).toFixed(1);
-      const pGanjar = ((ganjar / total) * 100).toFixed(1);
+        const pA = ((anies / total) * 100).toFixed(1);
+        const pC = ((close / total) * 100).toFixed(1);
+        const pP = ((prabowo / total) * 100).toFixed(1);
+        const pG = ((ganjar / total) * 100).toFixed(1);
 
-      document.getElementById('specAnies').style.width = pAnies + '%';
-      document.getElementById('specClose').style.width = pClose + '%';
-      document.getElementById('specPrabowo').style.width = pPrabowo + '%';
-      document.getElementById('specGanjar').style.width = pGanjar + '%';
+        barContainer.innerHTML = `
+          <div class="spec-segment" style="width: ${pA}%; background: var(--c-anies);" title="Anies: ${anies} Vil"></div>
+          <div class="spec-segment" style="width: ${pC}%; background: var(--c-close);" title="Close: ${close} Vil"></div>
+          <div class="spec-segment" style="width: ${pP}%; background: var(--c-prabowo);" title="Prabowo: ${prabowo} Vil"></div>
+          <div class="spec-segment" style="width: ${pG}%; background: var(--c-ganjar);" title="Ganjar: ${ganjar} Vil"></div>
+        `;
 
-      document.getElementById('lblAnies').innerText = `${anies} Vil (${pAnies}%)`;
-      document.getElementById('lblClose').innerText = `${close} Vil (${pClose}%)`;
-      document.getElementById('lblPrabowo').innerText = `${prabowo} Vil (${pPrabowo}%)`;
+        labelsContainer.innerHTML = `
+          <span><b>01 Anies:</b> ${anies} Vil (${pA}%)</span>
+          <span><b>Close &lt;2%:</b> ${close} Vil (${pC}%)</span>
+          <span><b>02 Prabowo:</b> ${prabowo} Vil (${pP}%)</span>
+          ${ganjar > 0 ? `<span><b>03 Ganjar:</b> ${ganjar} Vil (${pG}%)</span>` : ''}
+        `;
+      } else if (mode === 'margin') {
+        titleElem.innerText = `${titlePrefix} Victory Margin Strength (${total} Kelurahan total):`;
+        let aHigh = 0, aMod = 0, close = 0, pMod = 0, pHigh = 0;
+        filtered.forEach(f => {
+          const p = f.properties;
+          if (p.diff <= 2.0) close++;
+          else if (p.pct_anies > p.pct_prabowo) {
+            if (p.diff > 15.0) aHigh++;
+            else aMod++;
+          } else {
+            if (p.diff > 15.0) pHigh++;
+            else pMod++;
+          }
+        });
 
-      const titlePrefix = cityName ? cityName : "Urban Village";
-      document.getElementById('spectrumTitle').innerText = `${titlePrefix} Distribution Breakdown (${total} Kelurahan total):`;
+        const paH = ((aHigh / total) * 100).toFixed(1);
+        const paM = ((aMod / total) * 100).toFixed(1);
+        const pC = ((close / total) * 100).toFixed(1);
+        const ppM = ((pMod / total) * 100).toFixed(1);
+        const ppH = ((pHigh / total) * 100).toFixed(1);
+
+        barContainer.innerHTML = `
+          <div class="spec-segment" style="width: ${paH}%; background: #782438;" title="Anies >15%: ${aHigh} Vil"></div>
+          <div class="spec-segment" style="width: ${paM}%; background: #CD7286;" title="Anies 2-15%: ${aMod} Vil"></div>
+          <div class="spec-segment" style="width: ${pC}%; background: #EAA86D;" title="Close <2%: ${close} Vil"></div>
+          <div class="spec-segment" style="width: ${ppM}%; background: #A2C0D9;" title="Prabowo 2-15%: ${pMod} Vil"></div>
+          <div class="spec-segment" style="width: ${ppH}%; background: #486E8D;" title="Prabowo >15%: ${pHigh} Vil"></div>
+        `;
+
+        labelsContainer.innerHTML = `
+          <span><b>01 &gt;15%:</b> ${aHigh} (${paH}%)</span>
+          <span><b>01 2-15%:</b> ${aMod} (${paM}%)</span>
+          <span><b>Close &lt;2%:</b> ${close} (${pC}%)</span>
+          <span><b>02 2-15%:</b> ${pMod} (${ppM}%)</span>
+          <span><b>02 &gt;15%:</b> ${pHigh} (${ppH}%)</span>
+        `;
+      } else if (mode === 'close') {
+        titleElem.innerText = `${titlePrefix} Battleground vs Decisive Margins (${total} Kelurahan total):`;
+        let battleground = 0, decisive = 0;
+        filtered.forEach(f => {
+          if (f.properties.diff <= 2.0) battleground++;
+          else decisive++;
+        });
+
+        const pB = ((battleground / total) * 100).toFixed(1);
+        const pD = ((decisive / total) * 100).toFixed(1);
+
+        barContainer.innerHTML = `
+          <div class="spec-segment" style="width: ${pB}%; background: #EAA86D;" title="Battleground: ${battleground} Vil"></div>
+          <div class="spec-segment" style="width: ${pD}%; background: #DED9CE;" title="Decisive: ${decisive} Vil"></div>
+        `;
+
+        labelsContainer.innerHTML = `
+          <span><b>Battleground (&lt;2% diff):</b> ${battleground} Vil (${pB}%)</span>
+          <span><b>Decisive Margin (&gt;2% diff):</b> ${decisive} Vil (${pD}%)</span>
+        `;
+      } else if (mode === 'density') {
+        titleElem.innerText = `${titlePrefix} Voter Turnout Volume Density (${total} Kelurahan total):`;
+        let vHigh = 0, high = 0, mod = 0, low = 0;
+        filtered.forEach(f => {
+          const tot = f.properties.total_votes;
+          if (tot > 40000) vHigh++;
+          else if (tot > 25000) high++;
+          else if (tot > 15000) mod++;
+          else low++;
+        });
+
+        const pvH = ((vHigh / total) * 100).toFixed(1);
+        const pH = ((high / total) * 100).toFixed(1);
+        const pM = ((mod / total) * 100).toFixed(1);
+        const pL = ((low / total) * 100).toFixed(1);
+
+        barContainer.innerHTML = `
+          <div class="spec-segment" style="width: ${pvH}%; background: #2D4B66;" title=">40k: ${vHigh} Vil"></div>
+          <div class="spec-segment" style="width: ${pH}%; background: #537D9F;" title="25-40k: ${high} Vil"></div>
+          <div class="spec-segment" style="width: ${pM}%; background: #8CAFC8;" title="15-25k: ${mod} Vil"></div>
+          <div class="spec-segment" style="width: ${pL}%; background: #C5D8E6;" title="<15k: ${low} Vil"></div>
+        `;
+
+        labelsContainer.innerHTML = `
+          <span><b>&gt;40k Ballots:</b> ${vHigh} (${pvH}%)</span>
+          <span><b>25k-40k:</b> ${high} (${pH}%)</span>
+          <span><b>15k-25k:</b> ${mod} (${pM}%)</span>
+          <span><b>&lt;15k:</b> ${low} (${pL}%)</span>
+        `;
+      }
     }
 
     let currentFocusedLayer = null;
@@ -1594,17 +1694,15 @@
       }
     });
 
-    // Bulletproof High-Res Poster Export with Pure Vector Rasterization
+        // Bulletproof High-Res Poster Export with Pure Vector Rasterization & Exact Centering
     function exportPoster() {
       const btn = document.getElementById('btnExport');
       btn.innerText = '⏳ Rendering 4K Poster...';
       btn.style.opacity = '0.7';
 
-      // 1. Temporarily scroll window to top
       const originalScrollY = window.scrollY;
       window.scrollTo(0, 0);
 
-      // 2. Refresh Leaflet map and force exact symmetrical center bounds
       map.invalidateSize();
       centerMapBounds();
 
@@ -1620,31 +1718,24 @@
           backgroundColor: '#F6F3EE',
           logging: false,
           onclone: function(clonedDoc) {
-            // Hide the export button on the exported image
+            // Hide export button and search dropdown
             const clonedBtn = clonedDoc.getElementById('btnExport');
             if (clonedBtn) clonedBtn.style.display = 'none';
+            const dropdown = clonedDoc.getElementById('searchDropdown');
+            if (dropdown) dropdown.style.display = 'none';
 
-            // Flatten Leaflet 3D transforms to 2D absolute positioning for pixel-perfect alignment
-            const mapPane = clonedDoc.querySelector('.leaflet-map-pane');
-            if (mapPane) {
-              const transform = window.getComputedStyle(mapPane).transform;
-              if (transform && transform !== 'none') {
-                const match = transform.match(/matrix\(([^)]+)\)/);
-                if (match) {
-                  const parts = match[1].split(',').map(s => parseFloat(s.trim()));
-                  if (parts.length === 6) {
-                    mapPane.style.left = parts[4] + 'px';
-                    mapPane.style.top = parts[5] + 'px';
-                    mapPane.style.transform = 'none';
-                  }
-                }
+            // Clean up basemap controls for publication export
+            const basemapWrap = clonedDoc.querySelector('.basemap-toggle-wrap');
+            if (basemapWrap) {
+              const opacity = document.getElementById('basemapOpacity').value || '0.60';
+              const styleSelect = document.getElementById('basemapStyleSelect');
+              const styleName = styleSelect ? styleSelect.options[styleSelect.selectedIndex].text : 'City Streets';
+              const isChecked = document.getElementById('chkBasemap').checked;
+              if (isChecked) {
+                basemapWrap.innerHTML = `<span style="font-size:0.75rem; font-weight:700; color:#333;">🗺️ Basemap: ${styleName} (${Math.round(parseFloat(opacity)*100)}% Opacity)</span>`;
+              } else {
+                basemapWrap.innerHTML = `<span style="font-size:0.75rem; font-weight:700; color:#666;">🗺️ Basemap: Off</span>`;
               }
-            }
-
-            // Ensure SVG vector layer preserves sharp vector bounds without clipping
-            const svgElem = clonedDoc.querySelector('.leaflet-overlay-pane svg');
-            if (svgElem) {
-              svgElem.style.transform = 'none';
             }
           }
         }).then(canvas => {
