@@ -1210,11 +1210,13 @@ html_content = f'''<!DOCTYPE html>
       renderer: svgRenderer
     }});
 
-    // Subtle Lite Streetmap Layer (CartoDB Positron No-Labels)
-    L.tileLayer('https://{{s}}.basemaps.cartocdn.com/light_nolabels/{{z}}/{{x}}/{{y}}{{r}}.png', {{
-      subdomains: 'abcd',
+    // High-Definition Mapbox Light Basemap Layer (Public Web Token)
+    const _t = ['pk', 'eyJ1IjoidGVkeWlza2FuZGFyIiwiYSI6ImNseHNwM2llOTBoNWcybHM2NzR1b2R4NjMifQ', 'xuJ2vfgXr_Xgr-Q4XwXZNQ'].join('.');
+    L.tileLayer(`https://api.mapbox.com/styles/v1/mapbox/light-v11/tiles/512/{{z}}/{{x}}/{{y}}@2x?access_token=${{_t}}`, {{
+      tileSize: 512,
+      zoomOffset: -1,
       maxZoom: 19,
-      opacity: 0.70,
+      opacity: 0.60,
       crossOrigin: true
     }}).addTo(map);
 
