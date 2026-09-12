@@ -1461,6 +1461,7 @@ html_content = f'''<!DOCTYPE html>
       }}
     ];
 
+    const perimeterMarkers = [];
     perimeterCityLabels.forEach(c => {{
       const customIcon = L.divIcon({{
         className: 'custom-perimeter-icon',
@@ -1475,23 +1476,21 @@ html_content = f'''<!DOCTYPE html>
         iconAnchor: [87, 14]
       }});
 
-      L.marker([c.lat, c.lng], {{ icon: customIcon, interactive: true }}).addTo(map);
+      const m = L.marker([c.lat, c.lng], {{ icon: customIcon, interactive: true }}).addTo(map);
+      perimeterMarkers.push(m);
     }});
 
-    // Satellite region badges removed as requested
+    // Combined Feature Group of all map elements (Hexagons + Perimeter badges)
+    const allMapElementsGroup = L.featureGroup([geojsonLayer, ...perimeterMarkers]);
 
-    // Function to calculate and fit all elements in exact symmetrical center
+    // Function to calculate and fit all elements in exact mathematical center
     function centerMapBounds() {{
-      // Symmetrical center longitude: 106.840, center latitude: -6.175
-      const symmetricBounds = L.latLngBounds(
-        L.latLng(-6.325, 106.615),
-        L.latLng(-6.025, 107.065)
-      );
-      map.fitBounds(symmetricBounds, {{
-        padding: [10, 10],
-        maxZoom: 14,
-        animate: false
-      }});
+      if (allMapElementsGroup && allMapElementsGroup.getBounds().isValid()) {{
+        map.fitBounds(allMapElementsGroup.getBounds(), {{
+          padding: [22, 22],
+          animate: false
+        }});
+      }}
     }}
 
     centerMapBounds();
