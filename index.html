@@ -1232,26 +1232,7 @@
       L.marker([c.lat, c.lng], { icon: customIcon, interactive: true }).addTo(map);
     });
 
-    // =========================================================================
-    // 3. SATELLITE ADMINISTRATIVE REGIONS (BODETABEK & JAVA SEA)
-    // =========================================================================
-    const satelliteRegions = [
-      { name: '🌊 JAVA SEA (EXCL. KEP. SERIBU)', lat: -6.015, lon: 106.840, isSea: true },
-      { name: '📍 TANGERANG CITY', lat: -6.175, lon: 106.605, isSea: false },
-      { name: '📍 SOUTH TANGERANG (BSD)', lat: -6.290, lon: 106.655, isSea: false },
-      { name: '📍 DEPOK & BOGOR REGENCY', lat: -6.345, lon: 106.840, isSea: false },
-      { name: '📍 BEKASI CITY & REGENCY', lat: -6.200, lon: 107.075, isSea: false }
-    ];
-
-    satelliteRegions.forEach(reg => {
-      const icon = L.divIcon({
-        className: 'surrounding-region-label',
-        html: `<div class="surrounding-badge ${reg.isSea ? 'sea-badge' : ''}">${reg.name}</div>`,
-        iconSize: [195, 26],
-        iconAnchor: [97, 13]
-      });
-      L.marker([reg.lat, reg.lon], { icon: icon, interactive: false }).addTo(map);
-    });
+    // Satellite region badges removed as requested
 
     // Function to calculate and fit all elements in center
     function centerMapBounds() {
