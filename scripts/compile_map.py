@@ -1260,7 +1260,7 @@ html_content = f'''<!DOCTYPE html>
       zoomOffset: -1,
       maxZoom: 19,
       opacity: 0.60,
-      crossOrigin: true
+      crossOrigin: 'anonymous'
     }}).addTo(map);
 
     function toggleBasemap(enabled) {{
@@ -1286,7 +1286,7 @@ html_content = f'''<!DOCTYPE html>
         zoomOffset: -1,
         maxZoom: 19,
         opacity: opacity,
-        crossOrigin: true
+        crossOrigin: 'anonymous'
       }});
       
       if (isChecked) {{
@@ -1908,8 +1908,49 @@ html_content = f'''<!DOCTYPE html>
       }}
     }});
 
-                // Bulletproof High-Res Poster Export with Pure Vector Rasterization & Exact Centering
-    function exportPoster() {{
+                    // Helper: Convert all active streetmap tile images to true pixel grayscale
+    function convertTilesToGrayscale(doc) {{
+      const tileImgs = (doc || document).querySelectorAll('.leaflet-tile-pane img');
+      tileImgs.forEach(img => {{
+        try {{
+          if (img.complete && (img.naturalWidth > 0 || img.width > 0)) {{
+            const w = img.naturalWidth || img.width || 512;
+            const h = img.naturalHeight || img.height || 512;
+            const c = document.createElement('canvas');
+            c.width = w;
+            c.height = h;
+            const ctx = c.getContext('2d');
+            ctx.filter = 'grayscale(100%) contrast(90%) brightness(102%)';
+            ctx.drawImage(img, 0, 0, w, h);
+            try {{
+              const dataUrl = c.toDataURL('image/png');
+              if (dataUrl && dataUrl.length > 50) {{
+                img.src = dataUrl;
+              }}
+            }} catch (e) {{
+              // In case canvas is tainted, apply pixel iteration fallback
+              try {{
+                const imgData = ctx.getImageData(0, 0, w, h);
+                const d = imgData.data;
+                for (let i = 0; i < d.length; i += 4) {{
+                  const gray = Math.round(0.299 * d[i] + 0.587 * d[i+1] + 0.114 * d[i+2]);
+                  d[i] = gray; d[i+1] = gray; d[i+2] = gray;
+                }}
+                ctx.putImageData(imgData, 0, 0);
+                img.src = c.toDataURL('image/png');
+              }} catch (err2) {{
+                // fallback ignored
+              }}
+            }}
+          }}
+        }} catch (err) {{
+          console.warn('Tile grayscale conversion note:', err);
+        }}
+      }});
+    }}
+
+    // Bulletproof High-Res Poster Export with Pure Vector Rasterization & Exact Centering
+    async function exportPoster() {{
       const btn = document.getElementById('btnExport');
       btn.innerText = '⏳ Rendering 4K Poster...';
       btn.style.opacity = '0.7';
@@ -1920,80 +1961,61 @@ html_content = f'''<!DOCTYPE html>
       map.invalidateSize();
       centerMapBounds();
 
-      setTimeout(() => {{
-        const poster = document.getElementById('posterContent');
+      // 1. Convert all tiles on screen to true grayscale before html2canvas starts
+      convertTilesToGrayscale(document);
 
-        html2canvas(poster, {{
-          scale: 4, // TRUE 4K ULTRA-HIGH-RESOLUTION (~3,920px width)
-          useCORS: true,
-          allowTaint: true,
-          scrollX: 0,
-          scrollY: 0,
-          backgroundColor: '#F6F3EE',
-          logging: false,
-          onclone: function(clonedDoc) {{
-            // Hide export button and search dropdown
-            const clonedBtn = clonedDoc.getElementById('btnExport');
-            if (clonedBtn) clonedBtn.style.display = 'none';
-            const dropdown = clonedDoc.getElementById('searchDropdown');
-            if (dropdown) dropdown.style.display = 'none';
+      // Wait 350ms for tiles and map center to settle
+      await new Promise(r => setTimeout(r, 350));
 
-            // Clean up basemap controls for publication export
-            const basemapWrap = clonedDoc.querySelector('.basemap-toggle-wrap');
-            if (basemapWrap) {{
-              const opacity = document.getElementById('basemapOpacity').value || '0.60';
-              const styleSelect = document.getElementById('basemapStyleSelect');
-              const styleName = styleSelect ? styleSelect.options[styleSelect.selectedIndex].text : 'City Streets';
-              const isChecked = document.getElementById('chkBasemap').checked;
-              if (isChecked) {{
-                basemapWrap.innerHTML = `<span style="font-size:0.75rem; font-weight:700; color:#333;">🗺️ Basemap: ${{styleName}} (${{Math.round(parseFloat(opacity)*100)}}% Opacity)</span>`;
-              }} else {{
-                basemapWrap.innerHTML = `<span style="font-size:0.75rem; font-weight:700; color:#666;">🗺️ Basemap: Off</span>`;
-              }}
+      const poster = document.getElementById('posterContent');
+
+      html2canvas(poster, {{
+        scale: 4, // TRUE 4K ULTRA-HIGH-RESOLUTION (~3,920px width)
+        useCORS: true,
+        allowTaint: true,
+        scrollX: 0,
+        scrollY: 0,
+        backgroundColor: '#F6F3EE',
+        logging: false,
+        onclone: function(clonedDoc) {{
+          // Hide export button and search dropdown
+          const clonedBtn = clonedDoc.getElementById('btnExport');
+          if (clonedBtn) clonedBtn.style.display = 'none';
+          const dropdown = clonedDoc.getElementById('searchDropdown');
+          if (dropdown) dropdown.style.display = 'none';
+
+          // Clean up basemap controls for publication export
+          const basemapWrap = clonedDoc.querySelector('.basemap-toggle-wrap');
+          if (basemapWrap) {{
+            const opacity = document.getElementById('basemapOpacity').value || '0.60';
+            const styleSelect = document.getElementById('basemapStyleSelect');
+            const styleName = styleSelect ? styleSelect.options[styleSelect.selectedIndex].text : 'City Streets';
+            const isChecked = document.getElementById('chkBasemap').checked;
+            if (isChecked) {{
+              basemapWrap.innerHTML = `<span style="font-size:0.75rem; font-weight:700; color:#333;">🗺️ Basemap: ${{styleName}} (${{Math.round(parseFloat(opacity)*100)}}% Opacity)</span>`;
+            }} else {{
+              basemapWrap.innerHTML = `<span style="font-size:0.75rem; font-weight:700; color:#666;">🗺️ Basemap: Off</span>`;
             }}
-
-            // Convert all active streetmap tile images to true pixel grayscale for export
-            const tileImages = clonedDoc.querySelectorAll('.leaflet-tile-pane img');
-            tileImages.forEach(img => {{
-              try {{
-                if (img.complete && img.naturalWidth > 0) {{
-                  const c = document.createElement('canvas');
-                  c.width = img.naturalWidth || 512;
-                  c.height = img.naturalHeight || 512;
-                  const ctx = c.getContext('2d');
-                  ctx.drawImage(img, 0, 0);
-                  const imgData = ctx.getImageData(0, 0, c.width, c.height);
-                  const d = imgData.data;
-                  for (let i = 0; i < d.length; i += 4) {{
-                    const gray = Math.round(0.299 * d[i] + 0.587 * d[i+1] + 0.114 * d[i+2]);
-                    d[i] = gray;
-                    d[i+1] = gray;
-                    d[i+2] = gray;
-                  }}
-                  ctx.putImageData(imgData, 0, 0);
-                  img.src = c.toDataURL('image/png');
-                }}
-              }} catch (e) {{
-                console.warn('Tile grayscale raster note:', e);
-              }}
-            }});
           }}
-        }}).then(canvas => {{
-          const link = document.createElement('a');
-          link.download = 'The_Sound_of_Jakarta_Election_Map_4K.png';
-          link.href = canvas.toDataURL('image/png', 1.0);
-          link.click();
-          btn.innerText = '📸 Export PNG';
-          btn.style.opacity = '1';
-          window.scrollTo(0, originalScrollY);
-        }}).catch(err => {{
-          console.error('Export error:', err);
-          btn.innerText = '📸 Export PNG';
-          btn.style.opacity = '1';
-          window.scrollTo(0, originalScrollY);
-          alert('Export error, please try again.');
-        }});
-      }}, 350);
+
+          // 2. Ensure all cloned tiles are also pure grayscale
+          convertTilesToGrayscale(clonedDoc);
+        }}
+      }}).then(canvas => {{
+        const link = document.createElement('a');
+        link.download = 'The_Sound_of_Jakarta_Election_Map_4K.png';
+        link.href = canvas.toDataURL('image/png', 1.0);
+        link.click();
+        btn.innerText = '📸 Export PNG';
+        btn.style.opacity = '1';
+        window.scrollTo(0, originalScrollY);
+      }}).catch(err => {{
+        console.error('Export error:', err);
+        btn.innerText = '📸 Export PNG';
+        btn.style.opacity = '1';
+        window.scrollTo(0, originalScrollY);
+        alert('Export error, please try again.');
+      }});
     }}
   </script>
 </body>
