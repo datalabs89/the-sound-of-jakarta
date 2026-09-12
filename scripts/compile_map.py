@@ -450,9 +450,11 @@ html_content = f'''<!DOCTYPE html>
     }}
 
     .city-card-lead {{
-      font-size: 0.72rem;
+      font-size: 0.69rem;
       font-weight: 700;
       white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }}
 
     .city-card-lead.anies {{ color: var(--c-anies); }}
@@ -1028,37 +1030,37 @@ html_content = f'''<!DOCTYPE html>
         <div class="city-card all-city active" id="card-ALL" onclick="filterCity(null)">
           <div class="city-card-name">All Jakarta</div>
           <div class="city-card-count">261 Villages</div>
-          <div class="city-card-lead all">Complete Map</div>
+          <div class="city-card-lead all">01 Lead: 132/261 (50.6%)</div>
         </div>
 
         <div class="city-card" id="card-JAKARTA-UTARA" onclick="filterCity('JAKARTA UTARA')">
           <div class="city-card-name">North Jakarta</div>
           <div class="city-card-count">31 Villages</div>
-          <div class="city-card-lead prabowo">02 Lead: 24 Vil</div>
+          <div class="city-card-lead prabowo">02 Lead: 26/31 (83.9%)</div>
         </div>
 
         <div class="city-card" id="card-JAKARTA-BARAT" onclick="filterCity('JAKARTA BARAT')">
           <div class="city-card-name">West Jakarta</div>
           <div class="city-card-count">56 Villages</div>
-          <div class="city-card-lead prabowo">02 Lead: 47 Vil</div>
+          <div class="city-card-lead prabowo">02 Lead: 39/56 (69.6%)</div>
         </div>
 
         <div class="city-card" id="card-JAKARTA-PUSAT" onclick="filterCity('JAKARTA PUSAT')">
           <div class="city-card-name">Central Jakarta</div>
           <div class="city-card-count">44 Villages</div>
-          <div class="city-card-lead anies">01 Lead: 24 Vil</div>
+          <div class="city-card-lead anies">01 Lead: 24/44 (54.5%)</div>
         </div>
 
         <div class="city-card" id="card-JAKARTA-TIMUR" onclick="filterCity('JAKARTA TIMUR')">
           <div class="city-card-name">East Jakarta</div>
           <div class="city-card-count">65 Villages</div>
-          <div class="city-card-lead anies">01 Lead: 41 Vil</div>
+          <div class="city-card-lead anies">01 Lead: 40/65 (61.5%)</div>
         </div>
 
         <div class="city-card" id="card-JAKARTA-SELATAN" onclick="filterCity('JAKARTA SELATAN')">
           <div class="city-card-name">South Jakarta</div>
           <div class="city-card-count">65 Villages</div>
-          <div class="city-card-lead anies">01 Lead: 38 Vil</div>
+          <div class="city-card-lead anies">01 Lead: 49/65 (75.4%)</div>
         </div>
       </div>
 
