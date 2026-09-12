@@ -838,7 +838,8 @@ html_content = f'''<!DOCTYPE html>
       display: flex;
       align-items: center;
       gap: 7px;
-      z-index: 500;
+      position: relative;
+      z-index: 700;
     }}
 
     .city-perimeter-label:hover {{
@@ -1403,10 +1404,13 @@ html_content = f'''<!DOCTYPE html>
       }}
     }}).addTo(map);
 
-    // Dedicated Pane for City Boundaries (Guaranteed Top Z-Index & Dedicated SVG Renderer)
+    // Dedicated Pane for City Boundaries (Layered above hexagons at z-index 500, but underneath city labels at z-index 700)
     map.createPane('cityBordersPane');
-    map.getPane('cityBordersPane').style.zIndex = 650;
+    map.getPane('cityBordersPane').style.zIndex = 500;
     map.getPane('cityBordersPane').style.pointerEvents = 'none';
+    if (map.getPane('markerPane')) {{
+      map.getPane('markerPane').style.zIndex = 700;
+    }}
 
     const borderSvgRenderer = L.svg({{ pane: 'cityBordersPane', padding: 0 }});
 
