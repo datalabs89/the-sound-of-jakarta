@@ -1,4 +1,4 @@
-# The Sound of Jakarta — 2024 Presidential Election Cartogram
+# The Voice of Jakarta — 2024 Presidential Election Cartogram
 
 > **An interactive, publication-grade tessellated hexagonal cartogram analyzing the 2024 Indonesian Presidential Election across 261 mainland urban villages (*Kelurahan*) of DKI Jakarta.**
 
@@ -19,10 +19,10 @@ Experience the live interactive map directly in your browser:
 
 In the 2024 Indonesian Presidential Election, the capital territory of **DKI Jakarta** emerged as the nation's most closely contested battlefield. Across **5,524,091 certified valid ballots** cast across **261 mainland urban villages (*Kelurahan*)**, the electorate was divided between two opposing political coalitions:
 
-* **01 Anies Baswedan – Muhaimin Iskandar**: **41.64%** *(2,338,237 votes)* — Plurality leader in **119 Villages (45.6%)**
-* **02 Prabowo Subianto – Gibran Rakabuming Raka**: **41.15%** *(2,311,122 votes)* — Plurality leader in **106 Villages (40.6%)**
-* **03 Ganjar Pranowo – Mahfud MD**: **17.21%** *(966,547 votes)* — Plurality leader in **3 Villages (1.1%)**
-* **Battleground (<2.0% victory margin)**: **33 Villages (12.6%)** — Swing battlegrounds decided on razor-thin margins.
+* **01 Anies Baswedan – Muhaimin Iskandar**: **41.64%** *(2,338,237 votes)* — Plurality leader in **119 Villages (45.6%)** *(132 villages overall)*
+* **02 Prabowo Subianto – Gibran Rakabuming Raka**: **41.15%** *(2,311,122 votes)* — Plurality leader in **105 Villages (40.2%)** *(126 villages overall)*
+* **03 Ganjar Pranowo – Mahfud MD**: **17.21%** *(966,547 votes)* — Plurality leader in **2 Villages (0.8%)** *(3 villages won overall: Glodok, Roa Malaka, Kelapa Gading Timur)*
+* **Battleground (<2.0% victory margin)**: **35 Villages (13.4%)** — Razor-thin swing battlegrounds decided by less than 2.0% margin between the top two candidates.
 
 ---
 
@@ -31,7 +31,7 @@ In the 2024 Indonesian Presidential Election, the capital territory of **DKI Jak
 Standard geographical choropleth maps suffer from severe **area bias**: sparse rural/industrial districts (such as Kapuk or Marunda) visually overpower high-density urban residential centers (such as Kebon Melati, Menteng, or Pal Meriam).
 
 This project utilizes a **Tessellated Hexagonal Tile Cartogram**:
-1. **Equal Visual Weight**: Every urban village is represented by an equal-area regular hexagon ( = 0.0088^\circ$).
+1. **Equal Visual Weight**: Every urban village is represented by an equal-area regular hexagon ($R = 0.0088^\circ$).
 2. **Preserved Topological Adjacency**: Relative spatial neighbors and inter-city boundaries across Jakarta's 5 mainland administrative cities (*West, South, Central, East, North Jakarta*) are strictly maintained.
 3. **Surrounding Regional Anchors**: Outer perimeter labels and satellite administrative badges (*Tangerang City, South Tangerang/BSD, Depok & Bogor Regency, Bekasi City & Regency, Java Sea*) frame the territory naturally.
 
@@ -41,15 +41,15 @@ This project utilizes a **Tessellated Hexagonal Tile Cartogram**:
 
 ### 1. 🎛️ Four Dynamic Analytical Modes
 * **Plurality Winner**: Clean candidate preference map (*Prabowo Slate Blue, Anies Dusty Wine, Close Coral, Ganjar Muted Plum*).
-* **Victory Margin**: Multi-tier shaded gradients showing landslide bastions ($>15\%$), moderate leads (-7\%$), and tight contests.
-* **Close Contests (<2%)**: High-contrast isolation of the 33 swing battleground urban villages.
+* **Victory Margin**: Multi-tier shaded gradients showing landslide bastions ($>15\%$), moderate leads ($2-15\%$), and tight contests.
+* **Close Contests (<2%)**: High-contrast isolation of the 35 swing battleground urban villages.
 * **Voter Density**: Turnout density breakdown highlighting mega-polling villages ($>40,000$ ballots).
 
 ### 2. 🎯 Click-to-Focus Record Extremes (*Locate ↗*)
 Interactive cards allow instant navigation to notable electoral extremes:
-* **⚔️ Closest Margin**: **Pal Meriam (East Jakarta)** — .01\%$ difference (*decided by exactly 1 ballot*).
-* **🔴 Strongest 01 Bastion**: **Sukabumi Utara (West Jakarta)** — Anies .5\%$ vs Prabowo .3\%$ ($+39.3\%$ lead).
-* **🔵 Strongest 02 Stronghold**: **Kapuk Muara (North Jakarta)** — Prabowo .1\%$ vs Anies .4\%$ ($+35.7\%$ lead).
+* **⚔️ Closest Margin**: **Pal Meriam (East Jakarta)** — 0.01% difference (*decided by exactly 1 ballot*).
+* **🔴 Strongest 01 Bastion**: **Sukabumi Utara (West Jakarta)** — Anies 65.5% vs Prabowo 26.3% (+39.3% lead).
+* **🔵 Strongest 02 Stronghold**: **Kapuk (West Jakarta)** — Prabowo 56.5% vs Anies 25.0% (+31.5% lead, 42,500 ballots).
 
 ### 3. 🔍 Instant Search & Keyboard Navigation
 * Search 261 kelurahans in real-time with automatic highlighting.
@@ -62,6 +62,14 @@ Interactive cards allow instant navigation to notable electoral extremes:
 ### 5. 📸 4K Ultra-HD Pure Vector PNG Export
 * One-click poster generation exporting a **~3,920px wide (4K / 300+ DPI)** high-resolution PNG.
 * Powered by mathematical **SVG Vector rendering** with Leaflet DOM matrix transform normalization for zero-drift, razor-sharp output.
+
+### 6. 🏷️ Dynamic Hexagon Kelurahan Text Labels
+* Auto-appearing urban village text labels on hex cells when zooming in ($\ge 11.60$) or toggled manually via the `🏷️ Labels` toolbar button.
+* Built with 2-line title-case smart typography and white cartographic halos (`text-shadow`) to maintain razor-sharp legibility over any background color.
+
+### 7. 📱 Mobile Bottom Sheet Detail Drawer
+* Tailored for touch and mobile screens ($\le 768\text{px}$), replacing floating tooltips with an app-like bottom drawer.
+* Displays full candidate vote shares, progress bars, and total valid ballots, dismissible by swipe-down gesture, backdrop tap, or close button.
 
 ---
 

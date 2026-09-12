@@ -37,7 +37,8 @@ features = []
 geom_edges = defaultdict(list)
 
 # Track city statistics for summary cards
-city_stats = defaultdict(lambda: {"anies_v": 0, "prabowo_v": 0, "ganjar_v": 0, "anies_kel": 0, "prabowo_kel": 0, "close_kel": 0, "total_kel": 0})
+# Track city statistics for summary cards
+city_stats = defaultdict(lambda: {"anies_v": 0, "prabowo_v": 0, "ganjar_v": 0, "anies_kel": 0, "prabowo_kel": 0, "ganjar_kel": 0, "close_kel": 0, "total_kel": 0})
 
 for node in nodes:
     col = node["col"]
@@ -55,7 +56,20 @@ for node in nodes:
         city = v["kota"].upper()
         kec = v["kecamatan"].upper()
         kel = v["kelurahan"]
-        diff = abs(p1 - p2)
+
+        # Accurate Candidate Ranking (1st, 2nd, 3rd place)
+        candidates = [
+            {"code": "01", "name": "Anies - Muhaimin", "pct": p1, "votes": v1, "color": "#AF4D64"},
+            {"code": "02", "name": "Prabowo - Gibran", "pct": p2, "votes": v2, "color": "#7CA1BF"},
+            {"code": "03", "name": "Ganjar - Mahfud", "pct": p3, "votes": v3, "color": "#75556B"}
+        ]
+        candidates.sort(key=lambda x: (x["pct"], x["votes"]), reverse=True)
+        first, second, third = candidates[0], candidates[1], candidates[2]
+
+        diff = round(first["pct"] - second["pct"], 2)
+        vote_diff = first["votes"] - second["votes"]
+        lead_code = first["code"]
+        lead_name = first["name"]
         
         # Accumulate city stats
         c_stat = city_stats[city]
@@ -65,39 +79,40 @@ for node in nodes:
         c_stat["ganjar_v"] += v3
         if diff <= 2.0:
             c_stat["close_kel"] += 1
-        elif p1 > p2:
+        elif lead_code == "01":
             c_stat["anies_kel"] += 1
-        else:
+        elif lead_code == "02":
             c_stat["prabowo_kel"] += 1
+        else:
+            c_stat["ganjar_kel"] += 1
         
         # Plurality default
         if diff <= 2.0:
             winner_label = "Close Contest (<2% margin)"
             color = "#EAA86D"
-        elif p2 > p1 and p2 > p3:
-            winner_label = "Prabowo - Gibran"
-            color = "#7CA1BF"
-        elif p1 > p2 and p1 > p3:
-            winner_label = "Anies - Muhaimin"
-            color = "#AF4D64"
         else:
-            winner_label = "Ganjar - Mahfud"
-            color = "#75556B"
+            winner_label = lead_name
+            color = first["color"]
             
-        # Margin color shade
+        # Margin color shade and description
         if diff <= 2.0:
             margin_color = "#EAA86D"
-            margin_str = f"Close ({diff:.1f}% margin)"
-        elif p1 > p2:
+            margin_str = f"Close: {lead_code} +{diff:.1f}% ({vote_diff:,} votes)" if vote_diff > 1 else f"Close: {lead_code} +{diff:.2f}% (1 vote)"
+        elif lead_code == "01":
             margin_str = f"01 Leads +{diff:.1f}%"
             if diff > 15.0: margin_color = "#782438"
             elif diff > 7.0: margin_color = "#AF4D64"
             else: margin_color = "#CD7286"
-        else:
+        elif lead_code == "02":
             margin_str = f"02 Leads +{diff:.1f}%"
             if diff > 15.0: margin_color = "#486E8D"
             elif diff > 7.0: margin_color = "#7CA1BF"
             else: margin_color = "#A2C0D9"
+        else:  # 03 Ganjar
+            margin_str = f"03 Leads +{diff:.1f}%"
+            if diff > 15.0: margin_color = "#52364B"
+            elif diff > 7.0: margin_color = "#75556B"
+            else: margin_color = "#9A7B90"
 
         # Turnout density shade
         if total > 40000:
@@ -118,6 +133,9 @@ for node in nodes:
         kec = node.get("kec", "").upper()
         city = node.get("city", "").upper()
         p1, p2, p3, v1, v2, v3, total, diff = 0, 0, 0, 0, 0, 0, 0, 0
+        vote_diff = 0
+        lead_code = "02"
+        lead_name = "Prabowo - Gibran"
         winner_label = "Prabowo - Gibran"
         color = "#7CA1BF"
         margin_color = "#7CA1BF"
@@ -143,6 +161,8 @@ for node in nodes:
             "kecamatan": kec,
             "kota": city,
             "winner": winner_label,
+            "leader_code": lead_code,
+            "leader_name": lead_name,
             "pct_anies": p1,
             "pct_prabowo": p2,
             "pct_ganjar": p3,
@@ -151,6 +171,7 @@ for node in nodes:
             "votes_ganjar": v3,
             "total_votes": total,
             "diff": diff,
+            "vote_diff": vote_diff,
             "margin_str": margin_str,
             "density_str": density_str,
             "color_plurality": color,
@@ -196,6 +217,7 @@ total_ganjar = sum(f["properties"]["votes_ganjar"] for f in features)
 
 anies_wins = sum(1 for f in features if "Anies" in f["properties"]["winner"] and "Close" not in f["properties"]["winner"])
 prabowo_wins = sum(1 for f in features if "Prabowo" in f["properties"]["winner"] and "Close" not in f["properties"]["winner"])
+ganjar_wins = sum(1 for f in features if "Ganjar" in f["properties"]["winner"] and "Close" not in f["properties"]["winner"])
 close_wins = sum(1 for f in features if "Close" in f["properties"]["winner"])
 
 pct_anies_total = round(total_anies / total_votes * 100, 2)
@@ -204,6 +226,7 @@ pct_ganjar_total = round(total_ganjar / total_votes * 100, 2)
 
 pct_anies_kel = round(anies_wins / len(features) * 100, 1)
 pct_prabowo_kel = round(prabowo_wins / len(features) * 100, 1)
+pct_ganjar_kel = round(ganjar_wins / len(features) * 100, 1)
 pct_close_kel = round(close_wins / len(features) * 100, 1)
 
 html_content = f'''<!DOCTYPE html>
@@ -211,24 +234,24 @@ html_content = f'''<!DOCTYPE html>
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>The sound of Jakarta | 2024 Presidential Election</title>
+  <title>The Voice of Jakarta | 2024 Presidential Election</title>
   
   <!-- SEO & Social OpenGraph Meta Tags -->
-  <meta name="description" content="The Sound of Jakarta: A high-density tessellated hexagonal cartogram analyzing candidate voting patterns across 261 mainland urban villages (Kelurahan) in the 2024 Indonesian Presidential Election.">
+  <meta name="description" content="The Voice of Jakarta: A high-density tessellated hexagonal cartogram analyzing candidate voting patterns across 261 mainland urban villages (Kelurahan) in the 2024 Indonesian Presidential Election.">
   <meta name="keywords" content="Jakarta Election 2024, Pilpres 2024 Jakarta, Hex Cartogram, Jakarta Datawrapper, Peta Pilpres Jakarta, KawalPemilu, Tedy Iskandar">
   <meta name="author" content="Tedy Iskandar">
   
   <!-- Open Graph / Facebook -->
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://datalabs89.github.io/the-sound-of-jakarta/">
-  <meta property="og:title" content="The Sound of Jakarta | 2024 Presidential Election Cartogram">
+  <meta property="og:title" content="The Voice of Jakarta | 2024 Presidential Election Cartogram">
   <meta property="og:description" content="Interactive tessellated hexagonal election cartogram covering 261 mainland Kelurahan of DKI Jakarta. Explore victory margins, plurality winners, and turnout density.">
   <meta property="og:image" content="https://datalabs89.github.io/the-sound-of-jakarta/The_Sound_of_Jakarta_Election_Map_4K.png">
 
   <!-- Twitter / X -->
   <meta property="twitter:card" content="summary_large_image">
   <meta property="twitter:url" content="https://datalabs89.github.io/the-sound-of-jakarta/">
-  <meta property="twitter:title" content="The Sound of Jakarta | 2024 Presidential Election Cartogram">
+  <meta property="twitter:title" content="The Voice of Jakarta | 2024 Presidential Election Cartogram">
   <meta property="twitter:description" content="Interactive tessellated hexagonal election cartogram covering 261 mainland Kelurahan of DKI Jakarta. Explore victory margins, plurality winners, and turnout density.">
   <meta property="twitter:image" content="https://datalabs89.github.io/the-sound-of-jakarta/The_Sound_of_Jakarta_Election_Map_4K.png">
   
@@ -280,7 +303,7 @@ html_content = f'''<!DOCTYPE html>
     /* MAIN EDITORIAL POSTER */
     .dw-editorial-artboard {{
       width: 100%;
-      max-width: 980px;
+      max-width: 1040px;
       background-color: var(--dw-canvas);
       background-image: 
         radial-gradient(#ECE7DE 15%, transparent 16%),
@@ -289,7 +312,7 @@ html_content = f'''<!DOCTYPE html>
       background-position: 0 0, 30px 30px;
       border: 1px solid #D6CEBE;
       box-shadow: 0 20px 60px rgba(0,0,0,0.13);
-      padding: 48px 52px 36px 52px;
+      padding: 44px 44px 36px 44px;
       position: relative;
     }}
 
@@ -341,10 +364,15 @@ html_content = f'''<!DOCTYPE html>
 
     h1.dw-headline {{
       font-family: 'Libre Baskerville', Georgia, serif;
-      font-size: 2.9rem;
+      font-size: 2.95rem;
       font-weight: 700;
-      line-height: 1.12;
-      letter-spacing: -0.025em;
+      line-height: 1.10;
+      letter-spacing: -0.012em;
+      word-spacing: 0.055em;
+      font-kerning: normal;
+      text-rendering: optimizeLegibility;
+      font-feature-settings: "kern" 1, "liga" 1;
+      text-wrap: balance;
       color: var(--dw-text);
       margin-bottom: 12px;
     }}
@@ -407,20 +435,25 @@ html_content = f'''<!DOCTYPE html>
     /* 6-COLUMN ADMINISTRATIVE CITY SUMMARY GRID */
     .city-summary-grid {{
       display: grid;
-      grid-template-columns: 0.85fr 1fr 1fr 1.05fr 1fr 1fr;
-      gap: 6px;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 8px;
       margin-bottom: 20px;
     }}
 
     .city-card {{
-      background: rgba(255, 255, 255, 0.92);
+      background: rgba(255, 255, 255, 0.94);
       border: 1.5px solid #D8D1C4;
-      border-radius: 3px;
-      padding: 9px 5px 7px 5px;
+      border-radius: 4px;
+      padding: 10px 6px 8px 6px;
       text-align: center;
       transition: all 0.15s ease;
       cursor: pointer;
-      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      min-height: 86px;
+      box-sizing: border-box;
     }}
 
     .city-card:hover {{
@@ -441,44 +474,80 @@ html_content = f'''<!DOCTYPE html>
       color: #FFFFFF;
     }}
     .city-card.all-city.active .city-card-name,
-    .city-card.all-city.active .city-card-count,
+    .city-card.all-city.active .city-card-count {{
+      color: #FFFFFF !important;
+    }}
     .city-card.all-city.active .city-card-lead {{
+      background: rgba(255, 255, 255, 0.18);
+      border-color: rgba(255, 255, 255, 0.35);
+      color: #FFFFFF !important;
+    }}
+    .city-card.all-city.active .lead-primary,
+    .city-card.all-city.active .lead-secondary {{
       color: #FFFFFF !important;
     }}
 
     .city-card-name {{
-      font-size: 0.76rem;
+      font-size: 0.77rem;
       font-weight: 800;
-      letter-spacing: 0.025em;
+      letter-spacing: 0.03em;
       text-transform: uppercase;
       color: #111;
-      margin-bottom: 3px;
+      margin-bottom: 2px;
+      line-height: 1.2;
+      text-align: center;
       white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
     }}
 
     .city-card-count {{
-      font-size: 0.73rem;
-      color: #555;
-      border-bottom: 1px solid #EAE5DC;
-      padding-bottom: 3px;
-      margin-bottom: 4px;
+      font-size: 0.70rem;
+      color: #6E685E;
       font-weight: 600;
+      margin-bottom: 6px;
       white-space: nowrap;
     }}
 
     .city-card-lead {{
-      font-size: 0.75rem;
-      font-weight: 700;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      padding: 4px 4px;
+      border-radius: 3px;
+      line-height: 1.25;
+      box-sizing: border-box;
+      gap: 1px;
     }}
 
-    .city-card-lead.anies {{ color: var(--c-anies); }}
-    .city-card-lead.prabowo {{ color: #3C6689; }}
-    .city-card-lead.all {{ color: #444; }}
+    .city-card-lead.prabowo {{
+      background: #EBF1F6;
+      color: #2D506F;
+      border: 1px solid #D2DFEB;
+    }}
+    .city-card-lead.anies {{
+      background: #F8EDEF;
+      color: #782438;
+      border: 1px solid #ECD2D8;
+    }}
+    .city-card-lead.all {{
+      background: #ECE7DF;
+      color: #333333;
+      border: 1px solid #D8D1C4;
+    }}
+
+    .lead-primary {{
+      font-size: 0.73rem;
+      font-weight: 800;
+      white-space: nowrap;
+    }}
+
+    .lead-secondary {{
+      font-size: 0.66rem;
+      font-weight: 600;
+      white-space: nowrap;
+      opacity: 0.85;
+    }}
 
     /* DEDICATED EDITORIAL STORYLINE & EXTREMES STRIP */
     .storyline-strip {{
@@ -792,36 +861,167 @@ html_content = f'''<!DOCTYPE html>
       filter: grayscale(100%) contrast(88%) brightness(102%);
     }}
 
-    /* SURROUNDING SATELLITE ADMINISTRATIVE REGION BADGES (BODETABEK & JAVA SEA) */
-    .surrounding-region-label {{
-      background: transparent;
-      border: none;
+    /* HEXAGON DYNAMIC TEXT LABELS (P2) */
+    .hex-label-item {{
+      background: transparent !important;
+      border: none !important;
+      box-shadow: none !important;
+      pointer-events: none !important;
     }}
 
-    .surrounding-badge {{
-      font-family: 'IBM Plex Sans', sans-serif;
-      font-size: 10.5px;
-      font-weight: 800;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: #4A443A;
-      border: 1.5px dashed #9E9587;
-      background: rgba(250, 248, 245, 0.94);
-      padding: 4px 10px;
-      border-radius: 3px;
+    .hex-label-text {{
+      font-family: 'IBM Plex Sans', -apple-system, sans-serif;
+      font-size: 8px;
+      font-weight: 700;
+      color: #111111;
+      text-shadow: 
+        -1.5px -1.5px 0 #FFFFFF,  
+         1.5px -1.5px 0 #FFFFFF,
+        -1.5px  1.5px 0 #FFFFFF,
+         1.5px  1.5px 0 #FFFFFF,
+         0 0 3px #FFFFFF;
+      text-align: center;
+      line-height: 1.05;
       white-space: nowrap;
       pointer-events: none;
+      user-select: none;
+      letter-spacing: -0.02em;
+      transition: opacity 0.2s ease, font-size 0.15s ease;
+    }}
+
+    .labels-toggle-wrap {{
       display: flex;
       align-items: center;
       gap: 5px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+      font-size: 0.74rem;
+      font-weight: 700;
+      color: #333333;
+      background: #ECE7DE;
+      padding: 5px 9px;
+      border-radius: 3px;
+      border: 1px solid #D6CEBE;
+      cursor: pointer;
+      user-select: none;
+      transition: all 0.15s ease;
     }}
 
-    .sea-badge {{
-      color: #2F597C;
-      border: 1.5px solid #8CAFC8;
-      background: rgba(220, 236, 249, 0.94);
-      letter-spacing: 0.14em;
+    .labels-toggle-wrap:hover {{
+      background: #E4DEC5;
+    }}
+
+    /* MOBILE BOTTOM SHEET DRAWER (P2 UX ENHANCEMENT) */
+    .drawer-backdrop {{
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.38);
+      z-index: 9998;
+      backdrop-filter: blur(2px);
+      -webkit-backdrop-filter: blur(2px);
+      opacity: 0;
+      transition: opacity 0.25s ease;
+    }}
+
+    .drawer-backdrop.active {{
+      display: block;
+      opacity: 1;
+    }}
+
+    .mobile-drawer {{
+      display: none;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: #FFFFFF;
+      border-top: 1.5px solid #D6CEBE;
+      border-radius: 16px 16px 0 0;
+      box-shadow: 0 -6px 30px rgba(0, 0, 0, 0.22);
+      z-index: 9999;
+      padding: 12px 18px 24px 18px;
+      transform: translateY(105%);
+      transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+      max-height: 75vh;
+      overflow-y: auto;
+      font-family: 'IBM Plex Sans', -apple-system, sans-serif;
+    }}
+
+    .mobile-drawer.active {{
+      transform: translateY(0);
+    }}
+
+    .drawer-drag-pill {{
+      width: 36px;
+      height: 4.5px;
+      background: #D8D2C5;
+      border-radius: 3px;
+      margin: 0 auto 12px auto;
+      cursor: pointer;
+    }}
+
+    .drawer-header {{
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 12px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid #ECE7DE;
+      gap: 10px;
+    }}
+
+    .drawer-title-box {{
+      flex: 1;
+    }}
+
+    .drawer-title {{
+      font-family: 'Libre Baskerville', Georgia, serif;
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: #111111;
+      margin-bottom: 2px;
+      line-height: 1.25;
+    }}
+
+    .drawer-sub {{
+      font-size: 0.82rem;
+      color: #555555;
+      line-height: 1.35;
+    }}
+
+    .drawer-sub .tt-margin {{
+      color: #111111;
+      font-weight: 700;
+    }}
+
+    .drawer-close-btn {{
+      background: #ECE7DE;
+      border: none;
+      border-radius: 50%;
+      width: 30px;
+      height: 30px;
+      font-size: 13px;
+      font-weight: 700;
+      color: #444444;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.15s ease, transform 0.15s ease;
+      flex-shrink: 0;
+    }}
+
+    .drawer-close-btn:hover {{
+      background: #DDD5C7;
+      transform: scale(1.08);
+    }}
+
+    @media (max-width: 768px) {{
+      .mobile-drawer {{
+        display: block;
+      }}
     }}
 
     /* PERIMETER CITY LABELS (JAKARTA 5 CITIES) */
@@ -874,18 +1074,24 @@ html_content = f'''<!DOCTYPE html>
     }}
 
     /* INSTANT HOVER TOOLTIP */
+    .leaflet-pane.leaflet-tooltip-pane {{
+      z-index: 1000 !important;
+    }}
+
     .leaflet-tooltip.dw-custom-tooltip {{
       background: #FFFFFF !important;
       border-radius: 3px !important;
       border: 1px solid #C4BCAC !important;
       box-shadow: 0 8px 30px rgba(0,0,0,0.18) !important;
-      padding: 13px 17px !important;
+      padding: 14px 18px !important;
       font-family: 'IBM Plex Sans', -apple-system, sans-serif !important;
       font-size: 0.85rem !important;
       color: #111 !important;
       opacity: 1 !important;
-      min-width: 255px !important;
+      min-width: 280px !important;
+      max-width: 320px !important;
       z-index: 1000 !important;
+      pointer-events: none !important;
     }}
 
     .leaflet-tooltip-top:before, 
@@ -900,49 +1106,85 @@ html_content = f'''<!DOCTYPE html>
       font-size: 1.10rem;
       font-weight: 700;
       color: #111;
-      margin-bottom: 2px;
+      margin-bottom: 3px;
+      line-height: 1.25;
+      letter-spacing: -0.01em;
     }}
 
     .dw-tt-sub {{
-      font-size: 0.77rem;
-      color: #666;
+      font-size: 0.80rem;
+      color: #555555;
       border-bottom: 1px solid #ECE7DE;
-      padding-bottom: 5px;
-      margin-bottom: 8px;
+      padding-bottom: 6px;
+      margin-bottom: 9px;
+      line-height: 1.35;
+    }}
+
+    .dw-tt-sub .tt-margin {{
+      color: #111111;
+      font-weight: 700;
     }}
 
     .dw-tt-row {{
       display: flex;
       justify-content: space-between;
+      align-items: center;
       margin-bottom: 4px;
-      font-size: 0.84rem;
+      font-size: 0.85rem;
     }}
 
     .dw-tt-row.lead {{
       font-weight: 700;
-      color: #000;
+      color: #000000;
+    }}
+
+    .dw-tt-row .c-cand-val {{
+      font-variant-numeric: tabular-nums;
+      text-align: right;
+      white-space: nowrap;
+    }}
+
+    .dw-tt-row .c-cand-votes {{
+      font-size: 0.78rem;
+      color: #666666;
+      font-weight: 500;
+      margin-left: 3px;
+    }}
+
+    .dw-tt-row.lead .c-cand-votes {{
+      color: #444444;
     }}
 
     .dw-tt-bar-wrap {{
       background: #EEE9DF;
-      height: 4.5px;
-      border-radius: 2px;
+      height: 6px;
+      border-radius: 3px;
       overflow: hidden;
-      margin-bottom: 6px;
+      margin-bottom: 7px;
     }}
 
     .dw-tt-bar-fill {{
       height: 100%;
-      border-radius: 2px;
+      border-radius: 3px;
     }}
 
     .dw-tt-total {{
       border-top: 1px dashed #DDD;
-      margin-top: 6px;
-      padding-top: 5px;
-      font-weight: 700;
+      margin-top: 8px;
+      padding-top: 6px;
+      font-size: 0.78rem;
+      color: #666666;
       display: flex;
       justify-content: space-between;
+      align-items: center;
+      letter-spacing: 0.02em;
+    }}
+
+    .dw-tt-total span:last-child {{
+      font-size: 0.84rem;
+      font-weight: 700;
+      color: #111111;
+      font-variant-numeric: tabular-nums;
     }}
 
     /* FOOTER */
@@ -987,7 +1229,7 @@ html_content = f'''<!DOCTYPE html>
     /* =========================================================================
        COMPREHENSIVE MULTI-DEVICE RESPONSIVE BREAKPOINTS (MOBILE / TABLET / DESKTOP)
        ========================================================================= */
-    @media (max-width: 1024px) {{
+    @media (max-width: 1080px) {{
       .dw-editorial-artboard {{
         padding: 28px 22px;
       }}
@@ -1020,9 +1262,10 @@ html_content = f'''<!DOCTYPE html>
         padding: 9px 12px;
       }}
       h1.dw-headline {{
-        font-size: clamp(1.60rem, 5.5vw, 2.2rem);
-        letter-spacing: -0.02em;
-        line-height: 1.15;
+        font-size: clamp(1.65rem, 5.5vw, 2.25rem);
+        letter-spacing: -0.01em;
+        word-spacing: 0.045em;
+        line-height: 1.14;
       }}
       .dw-subheadline {{
         font-size: 0.90rem;
@@ -1046,17 +1289,13 @@ html_content = f'''<!DOCTYPE html>
         margin-bottom: 16px;
       }}
       .city-card {{
-        padding: 8px 10px;
+        padding: 8px 6px;
       }}
       .city-card-name {{
-        font-size: 0.82rem;
+        font-size: 0.78rem;
       }}
       .city-card-count {{
-        font-size: 0.70rem;
-      }}
-      .city-card-lead {{
         font-size: 0.68rem;
-        padding: 2px 4px;
       }}
       .storyline-strip, .extremes-strip {{
         grid-template-columns: 1fr;
@@ -1126,6 +1365,13 @@ html_content = f'''<!DOCTYPE html>
         font-size: 0.65rem;
         padding: 1px 4px;
       }}
+      .leaflet-tooltip.dw-custom-tooltip {{
+        min-width: 250px !important;
+        padding: 12px 14px !important;
+      }}
+      .dw-tt-title {{
+        font-size: 1.02rem;
+      }}
       .dw-footer {{
         flex-direction: column-reverse;
         gap: 14px;
@@ -1143,6 +1389,13 @@ html_content = f'''<!DOCTYPE html>
       .city-summary-grid {{
         grid-template-columns: 1fr 1fr;
       }}
+      .leaflet-tooltip.dw-custom-tooltip {{
+        min-width: 225px !important;
+        padding: 10px 12px !important;
+      }}
+      .dw-tt-title {{
+        font-size: 0.95rem;
+      }}
       #mapViewport {{
         height: 400px;
       }}
@@ -1157,10 +1410,10 @@ html_content = f'''<!DOCTYPE html>
     <div class="header-area">
       <div class="header-top-row">
         <div class="badge-top">Election Cartography &middot; Special Report</div>
-        <button class="export-btn" id="btnExport" onclick="exportPoster()">📸 Export PNG</button>
+        <button class="export-btn" id="btnExport" onclick="exportPoster()">Download</button>
       </div>
 
-      <h1 class="dw-headline">The sound of Jakarta</h1>
+      <h1 class="dw-headline">The Voice of Jakarta</h1>
       <p class="dw-subheadline">
         Across 261 mainland urban villages (Kelurahan), Prabowo and Anies divide the capital's presidential electoral map
       </p>
@@ -1176,19 +1429,19 @@ html_content = f'''<!DOCTYPE html>
         <div class="stat-box">
           <div class="stat-label">02 Prabowo - Gibran</div>
           <div class="stat-val">41.15% <span class="stat-sub">(2,311,122 votes)</span></div>
-          <div class="stat-sub">Leading in <b>106</b> Villages (40.6%)</div>
+          <div class="stat-sub">Leading in <b>105</b> Villages (40.2%)</div>
         </div>
 
         <div class="stat-box">
           <div class="stat-label">03 Ganjar - Mahfud</div>
           <div class="stat-val">17.21% <span class="stat-sub">(966,547 votes)</span></div>
-          <div class="stat-sub">Leading in <b>3</b> Villages (1.1%)</div>
+          <div class="stat-sub">Leading in <b>2</b> Villages (0.8%)</div>
         </div>
 
         <div class="stat-box">
           <div class="stat-label">Battleground (&lt;2% diff)</div>
-          <div class="stat-val">33 <span class="stat-sub">Villages</span></div>
-          <div class="stat-sub">12.6% of Mainland Jakarta</div>
+          <div class="stat-val">35 <span class="stat-sub">Villages</span></div>
+          <div class="stat-sub">13.4% of Mainland Jakarta</div>
         </div>
       </div>
 
@@ -1197,37 +1450,55 @@ html_content = f'''<!DOCTYPE html>
         <div class="city-card all-city active" id="card-ALL" onclick="filterCity(null)">
           <div class="city-card-name">All Jakarta</div>
           <div class="city-card-count">261 Villages</div>
-          <div class="city-card-lead all">Complete Map</div>
+          <div class="city-card-lead all">
+            <span class="lead-primary">Complete Map</span>
+            <span class="lead-secondary">5 Mainland Cities</span>
+          </div>
         </div>
 
         <div class="city-card" id="card-JAKARTA-UTARA" onclick="filterCity('JAKARTA UTARA')">
           <div class="city-card-name">North Jakarta</div>
           <div class="city-card-count">31 Villages</div>
-          <div class="city-card-lead prabowo">02 Lead: 26 Vil (83.9%)</div>
+          <div class="city-card-lead prabowo">
+            <span class="lead-primary">02 Lead &middot; 83.9%</span>
+            <span class="lead-secondary">26 of 31 villages</span>
+          </div>
         </div>
 
         <div class="city-card" id="card-JAKARTA-BARAT" onclick="filterCity('JAKARTA BARAT')">
           <div class="city-card-name">West Jakarta</div>
           <div class="city-card-count">56 Villages</div>
-          <div class="city-card-lead prabowo">02 Lead: 39 Vil (69.6%)</div>
+          <div class="city-card-lead prabowo">
+            <span class="lead-primary">02 Lead &middot; 69.6%</span>
+            <span class="lead-secondary">39 of 56 villages</span>
+          </div>
         </div>
 
         <div class="city-card" id="card-JAKARTA-PUSAT" onclick="filterCity('JAKARTA PUSAT')">
           <div class="city-card-name">Central Jakarta</div>
           <div class="city-card-count">44 Villages</div>
-          <div class="city-card-lead anies">01 Lead: 24 Vil (54.5%)</div>
+          <div class="city-card-lead anies">
+            <span class="lead-primary">01 Lead &middot; 54.5%</span>
+            <span class="lead-secondary">24 of 44 villages</span>
+          </div>
         </div>
 
         <div class="city-card" id="card-JAKARTA-TIMUR" onclick="filterCity('JAKARTA TIMUR')">
           <div class="city-card-name">East Jakarta</div>
           <div class="city-card-count">65 Villages</div>
-          <div class="city-card-lead anies">01 Lead: 40 Vil (61.5%)</div>
+          <div class="city-card-lead anies">
+            <span class="lead-primary">01 Lead &middot; 61.5%</span>
+            <span class="lead-secondary">40 of 65 villages</span>
+          </div>
         </div>
 
         <div class="city-card" id="card-JAKARTA-SELATAN" onclick="filterCity('JAKARTA SELATAN')">
           <div class="city-card-name">South Jakarta</div>
           <div class="city-card-count">65 Villages</div>
-          <div class="city-card-lead anies">01 Lead: 49 Vil (75.4%)</div>
+          <div class="city-card-lead anies">
+            <span class="lead-primary">01 Lead &middot; 75.4%</span>
+            <span class="lead-secondary">49 of 65 villages</span>
+          </div>
         </div>
       </div>
 
@@ -1263,13 +1534,13 @@ html_content = f'''<!DOCTYPE html>
           <div class="ex-sub">Anies: 65.5% &middot; Margin +39.3%</div>
         </div>
 
-        <div class="extreme-card" onclick="focusKelurahan('KAPUK MUARA')" title="Click to locate Kapuk Muara on map">
+        <div class="extreme-card" onclick="focusKelurahan('KAPUK')" title="Click to locate Kapuk on map">
           <div class="ex-label">
             <span>🔵 Strongest 02 Stronghold</span>
             <span class="ex-hint">Locate ↗</span>
           </div>
-          <div class="ex-val">Kapuk Muara (North Jkt)</div>
-          <div class="ex-sub">Prabowo: 53.1% &middot; Margin +35.7%</div>
+          <div class="ex-val">Kapuk (West Jkt)</div>
+          <div class="ex-sub">Prabowo: 56.5% &middot; Margin +31.5%</div>
         </div>
       </div>
 
@@ -1297,6 +1568,13 @@ html_content = f'''<!DOCTYPE html>
             <span id="opacityValBadge" style="font-size: 0.70rem; color: #555; font-weight: 700; min-width: 26px;">60%</span>
           </div>
 
+          <div class="labels-toggle-wrap" title="Toggle village names on hex cells (Auto-appears when zooming in)">
+            <label style="display: flex; align-items: center; gap: 5px; cursor: pointer; user-select: none;">
+              <input type="checkbox" id="chkHexLabels" onchange="toggleHexLabels(this.checked)" style="cursor: pointer;">
+              <span>🏷️ Labels</span>
+            </label>
+          </div>
+
           <div class="search-box-wrap">
             <span class="search-icon">🔍</span>
             <input type="text" id="kelSearchInput" class="search-input" placeholder="Search urban village (e.g. Menteng)..." oninput="handleSearchInput(this.value)" onfocus="handleSearchInput(this.value)" onkeydown="handleSearchKeydown(event)" autocomplete="off">
@@ -1320,7 +1598,7 @@ html_content = f'''<!DOCTYPE html>
           </li>
           <li class="legend-row" onmouseenter="highlightLegendCategory('close')" onmouseleave="resetLegendHighlight()">
             <span class="legend-chip" style="background: var(--c-close);"></span>
-            <span><b>Close contest</b> (Difference &lt;2.0% margin between Paslon 01 and 02)</span>
+            <span><b>Close contest</b> (Difference &lt;2.0% victory margin between top two candidates)</span>
           </li>
           <li class="legend-row" onmouseenter="highlightLegendCategory('ganjar')" onmouseleave="resetLegendHighlight()">
             <span class="legend-chip" style="background: var(--c-ganjar);"></span>
@@ -1332,14 +1610,15 @@ html_content = f'''<!DOCTYPE html>
         <div class="spectrum-title" id="spectrumTitle">Urban Village Distribution Breakdown (261 Kelurahan total):</div>
         <div class="spectrum-bar" id="spectrumBar">
           <div class="spec-segment" id="specAnies" style="width: 45.6%; background: var(--c-anies);" title="Anies: 119 Villages"></div>
-          <div class="spec-segment" id="specClose" style="width: 12.6%; background: var(--c-close);" title="Close: 33 Villages"></div>
-          <div class="spec-segment" id="specPrabowo" style="width: 40.6%; background: var(--c-prabowo);" title="Prabowo: 106 Villages"></div>
-          <div class="spec-segment" id="specGanjar" style="width: 1.2%; background: var(--c-ganjar);" title="Ganjar: 3 Villages"></div>
+          <div class="spec-segment" id="specClose" style="width: 13.4%; background: var(--c-close);" title="Close: 35 Villages"></div>
+          <div class="spec-segment" id="specPrabowo" style="width: 40.2%; background: var(--c-prabowo);" title="Prabowo: 105 Villages"></div>
+          <div class="spec-segment" id="specGanjar" style="width: 0.8%; background: var(--c-ganjar);" title="Ganjar: 2 Villages"></div>
         </div>
         <div class="spectrum-labels" id="spectrumLabels">
           <span><b>01 Anies:</b> <span id="lblAnies">119 Villages (45.6%)</span></span>
-          <span><b>Close &lt;2%:</b> <span id="lblClose">33 Villages (12.6%)</span></span>
-          <span><b>02 Prabowo:</b> <span id="lblPrabowo">106 Villages (40.6%)</span></span>
+          <span><b>Close &lt;2%:</b> <span id="lblClose">35 Villages (13.4%)</span></span>
+          <span><b>02 Prabowo:</b> <span id="lblPrabowo">105 Villages (40.2%)</span></span>
+          <span><b>03 Ganjar:</b> <span id="lblGanjar">2 Villages (0.8%)</span></span>
         </div>
       </div>
     </div>
@@ -1362,6 +1641,20 @@ html_content = f'''<!DOCTYPE html>
       </div>
     </div>
 
+  </div>
+
+  <!-- MOBILE BOTTOM SHEET DETAIL DRAWER (P2) -->
+  <div id="mobileDrawerBackdrop" class="drawer-backdrop" onclick="closeMobileDrawer()"></div>
+  <div id="mobileDetailDrawer" class="mobile-drawer" role="dialog" aria-modal="true" aria-label="Kelurahan Details">
+    <div class="drawer-drag-pill" onclick="closeMobileDrawer()"></div>
+    <div class="drawer-header">
+      <div class="drawer-title-box">
+        <h3 id="drawerTitle" class="drawer-title">Kelurahan</h3>
+        <div id="drawerSub" class="drawer-sub"><span class="tt-geo">Kecamatan, Kota</span> &middot; <span class="tt-margin">Margin</span></div>
+      </div>
+      <button class="drawer-close-btn" onclick="closeMobileDrawer()" aria-label="Close drawer">✕</button>
+    </div>
+    <div id="drawerBody" class="drawer-body"></div>
   </div>
 
   <!-- LEAFLET & GEOJSON INTERACTIVE LOGIC -->
@@ -1479,33 +1772,33 @@ html_content = f'''<!DOCTYPE html>
         const normName = p.kelurahan.toUpperCase().replace(/[^A-Z0-9]/g, '');
         kelLayersMap[normName] = layer;
         
-        let p1Bold = p.winner === "Anies - Muhaimin" ? "lead" : "";
-        let p2Bold = p.winner === "Prabowo - Gibran" ? "lead" : "";
-        let p3Bold = p.winner === "Ganjar - Mahfud" ? "lead" : "";
+        let p1Bold = (p.pct_anies >= p.pct_prabowo && p.pct_anies >= p.pct_ganjar) ? "lead" : "";
+        let p2Bold = (p.pct_prabowo >= p.pct_anies && p.pct_prabowo >= p.pct_ganjar) ? "lead" : "";
+        let p3Bold = (p.pct_ganjar >= p.pct_anies && p.pct_ganjar >= p.pct_prabowo) ? "lead" : "";
         
         const tooltipContent = `
           <div class="dw-tt-title">${{p.kelurahan}}</div>
-          <div class="dw-tt-sub">${{p.kecamatan}}, ${{p.kota}} &middot; <b>${{p.margin_str}}</b></div>
+          <div class="dw-tt-sub"><span class="tt-geo">${{p.kecamatan}}, ${{p.kota}}</span> &middot; <span class="tt-margin">${{p.margin_str}}</span></div>
           
           <div class="dw-tt-row ${{p1Bold}}">
-            <span>01 Anies - Muhaimin</span>
-            <span>${{p.pct_anies}}% (${{p.votes_anies.toLocaleString()}})</span>
+            <span class="c-cand-name">01 Anies - Muhaimin</span>
+            <span class="c-cand-val"><b>${{p.pct_anies}}%</b> <span class="c-cand-votes">(${{p.votes_anies.toLocaleString()}})</span></span>
           </div>
           <div class="dw-tt-bar-wrap">
             <div class="dw-tt-bar-fill" style="width: ${{p.pct_anies}}%; background: var(--c-anies);"></div>
           </div>
 
           <div class="dw-tt-row ${{p2Bold}}">
-            <span>02 Prabowo - Gibran</span>
-            <span>${{p.pct_prabowo}}% (${{p.votes_prabowo.toLocaleString()}})</span>
+            <span class="c-cand-name">02 Prabowo - Gibran</span>
+            <span class="c-cand-val"><b>${{p.pct_prabowo}}%</b> <span class="c-cand-votes">(${{p.votes_prabowo.toLocaleString()}})</span></span>
           </div>
           <div class="dw-tt-bar-wrap">
             <div class="dw-tt-bar-fill" style="width: ${{p.pct_prabowo}}%; background: var(--c-prabowo);"></div>
           </div>
 
           <div class="dw-tt-row ${{p3Bold}}">
-            <span>03 Ganjar - Mahfud</span>
-            <span>${{p.pct_ganjar}}% (${{p.votes_ganjar.toLocaleString()}})</span>
+            <span class="c-cand-name">03 Ganjar - Mahfud</span>
+            <span class="c-cand-val"><b>${{p.pct_ganjar}}%</b> <span class="c-cand-votes">(${{p.votes_ganjar.toLocaleString()}})</span></span>
           </div>
           <div class="dw-tt-bar-wrap">
             <div class="dw-tt-bar-fill" style="width: ${{p.pct_ganjar}}%; background: var(--c-ganjar);"></div>
@@ -1520,7 +1813,8 @@ html_content = f'''<!DOCTYPE html>
         layer.bindTooltip(tooltipContent, {{
           sticky: true,
           direction: 'auto',
-          className: 'dw-custom-tooltip'
+          className: 'dw-custom-tooltip',
+          pane: 'tooltipPane'
         }});
 
         layer.on('mouseover', function(e) {{
@@ -1533,17 +1827,39 @@ html_content = f'''<!DOCTYPE html>
         }});
 
         layer.on('mouseout', function(e) {{
-          geojsonLayer.resetStyle(layer);
+          if (layer !== currentFocusedLayer) {{
+            geojsonLayer.resetStyle(layer);
+          }}
+        }});
+
+        layer.on('click', function(e) {{
+          L.DomEvent.stopPropagation(e);
+          focusKelurahan(p.kelurahan);
+          if (window.innerWidth <= 768) {{
+            layer.closeTooltip();
+            showMobileDrawer(p);
+          }}
         }});
       }}
     }}).addTo(map);
 
-    // Dedicated Pane for City Boundaries (Layered above hexagons at z-index 500, but underneath city labels at z-index 700)
+    // Dedicated Panes for Map Layers:
+    // cityBordersPane: z-index 500 (Borders above hexagons)
+    // hexLabelsPane: z-index 550 (Hex labels above borders, underneath perimeter badges at 700)
     map.createPane('cityBordersPane');
     map.getPane('cityBordersPane').style.zIndex = 500;
     map.getPane('cityBordersPane').style.pointerEvents = 'none';
+
+    map.createPane('hexLabelsPane');
+    map.getPane('hexLabelsPane').style.zIndex = 550;
+    map.getPane('hexLabelsPane').style.pointerEvents = 'none';
+
     if (map.getPane('markerPane')) {{
       map.getPane('markerPane').style.zIndex = 700;
+    }}
+    // Tooltip Pane must ALWAYS be layered above city labels (z-index 1000)
+    if (map.getPane('tooltipPane')) {{
+      map.getPane('tooltipPane').style.zIndex = 1000;
     }}
 
     const borderSvgRenderer = L.svg({{ pane: 'cityBordersPane', padding: 0 }});
@@ -1560,6 +1876,101 @@ html_content = f'''<!DOCTYPE html>
         lineJoin: 'round'
       }}
     }}).addTo(map);
+
+    // =========================================================================
+    // DYNAMIC HEXAGON KELURAHAN TEXT LABELS (P2)
+    // =========================================================================
+    function formatHexLabel(rawName) {{
+      if (!rawName) return '';
+      const words = rawName.trim().split(/\\s+/).map(w => {{
+        let low = w.toLowerCase();
+        if (low === 'dki' || low === 'ii' || low === 'iii' || low === 'iv' || low === 'v' || low === 'vi' || low === 'vii') return w.toUpperCase();
+        if (low === 'tg.' || low === 'tanjung') return 'Tg.';
+        if (low === 'kp.' || low === 'kampung') return 'Kp.';
+        if (low === 'klp.' || low === 'kelapa') return 'Klp.';
+        if (low === 'cip.' || low === 'cipinang') return 'Cip.';
+        if (low === 'pdk.' || low === 'pondok') return 'Pdk.';
+        if (low === 'gn.' || low === 'gunung') return 'Gn.';
+        return low.charAt(0).toUpperCase() + low.slice(1);
+      }});
+
+      if (words.length === 1) {{
+        return words[0];
+      }} else if (words.length === 2) {{
+        return words[0] + '<br>' + words[1];
+      }} else {{
+        return words[0] + ' ' + words[1] + '<br>' + words[2];
+      }}
+    }}
+
+    const hexLabelsGroup = L.layerGroup([], {{ pane: 'hexLabelsPane' }}).addTo(map);
+    const hexLabelMarkers = [];
+    let userExplicitLabelToggle = null;
+
+    geojsonLayer.eachLayer(layer => {{
+      const p = layer.feature.properties;
+      const center = layer.getBounds().getCenter();
+      const normName = p.kelurahan.toUpperCase().replace(/[^A-Z0-9]/g, '');
+      const formatted = formatHexLabel(p.kelurahan);
+
+      const labelIcon = L.divIcon({{
+        className: 'hex-label-item',
+        html: `<div class="hex-label-text" id="hexlbl-${{normName}}">${{formatted}}</div>`,
+        iconSize: [64, 26],
+        iconAnchor: [32, 13]
+      }});
+
+      const m = L.marker(center, {{
+        icon: labelIcon,
+        pane: 'hexLabelsPane',
+        interactive: false
+      }});
+
+      hexLabelsGroup.addLayer(m);
+      hexLabelMarkers.push({{
+        marker: m,
+        kota: p.kota,
+        kel: p.kelurahan,
+        norm: normName,
+        id: `hexlbl-${{normName}}`
+      }});
+    }});
+
+    function toggleHexLabels(enabled) {{
+      userExplicitLabelToggle = enabled;
+      updateHexLabelsVisibility();
+    }}
+
+    function updateHexLabelsVisibility() {{
+      const zoom = map.getZoom();
+      const chk = document.getElementById('chkHexLabels');
+      let shouldShow = false;
+
+      if (userExplicitLabelToggle !== null) {{
+        shouldShow = userExplicitLabelToggle;
+      }} else {{
+        shouldShow = zoom >= 11.60;
+        if (chk) chk.checked = shouldShow;
+      }}
+
+      const labelPane = map.getPane('hexLabelsPane');
+      if (labelPane) {{
+        labelPane.style.display = shouldShow ? 'block' : 'none';
+      }}
+
+      let fontSize = '8px';
+      if (zoom >= 13.0) fontSize = '11px';
+      else if (zoom >= 12.2) fontSize = '9.5px';
+      else if (zoom >= 11.6) fontSize = '8.5px';
+      else fontSize = '7.5px';
+
+      document.querySelectorAll('.hex-label-text').forEach(t => {{
+        t.style.fontSize = fontSize;
+      }});
+    }}
+
+    map.on('zoomend', updateHexLabelsVisibility);
+    updateHexLabelsVisibility();
 
     // =========================================================================
     // 2. PERIMETER CITY BADGES (JAKARTA 5 MAINLAND CITIES)
@@ -1675,7 +2086,7 @@ html_content = f'''<!DOCTYPE html>
         items.innerHTML = `
           <li class="legend-row" onmouseenter="highlightLegendCategory('prabowo')" onmouseleave="resetLegendHighlight()"><span class="legend-chip" style="background: var(--c-prabowo);"></span><span><b>Prabowo - Gibran</b> (Northern ports & Western commercial districts)</span></li>
           <li class="legend-row" onmouseenter="highlightLegendCategory('anies')" onmouseleave="resetLegendHighlight()"><span class="legend-chip" style="background: var(--c-anies);"></span><span><b>Anies - Muhaimin</b> (Eastern & Southern residential belts)</span></li>
-          <li class="legend-row" onmouseenter="highlightLegendCategory('close')" onmouseleave="resetLegendHighlight()"><span class="legend-chip" style="background: var(--c-close);"></span><span><b>Close contest</b> (&lt;2.0% difference between 01 & 02)</span></li>
+          <li class="legend-row" onmouseenter="highlightLegendCategory('close')" onmouseleave="resetLegendHighlight()"><span class="legend-chip" style="background: var(--c-close);"></span><span><b>Close contest</b> (&lt;2.0% victory margin between top two)</span></li>
           <li class="legend-row" onmouseenter="highlightLegendCategory('ganjar')" onmouseleave="resetLegendHighlight()"><span class="legend-chip" style="background: var(--c-ganjar);"></span><span><b>Ganjar - Mahfud</b></span></li>
         `;
       }} else if (mode === 'margin') {{
@@ -1683,16 +2094,17 @@ html_content = f'''<!DOCTYPE html>
         title.innerHTML = 'Victory margin strength across urban villages:';
         items.innerHTML = `
           <li class="legend-row" onmouseenter="highlightLegendMargin('anies-high')" onmouseleave="resetLegendHighlight()"><span class="legend-chip" style="background: #782438;"></span><span><b>Anies &gt;15% Lead</b> (Decisive landslide)</span></li>
-          <li class="legend-row" onmouseenter="highlightLegendMargin('anies-mod')" onmouseleave="resetLegendHighlight()"><span class="legend-chip" style="background: #CD7286;"></span><span><b>Anies 2-7% Lead</b> (Moderate lead)</span></li>
+          <li class="legend-row" onmouseenter="highlightLegendMargin('anies-mod')" onmouseleave="resetLegendHighlight()"><span class="legend-chip" style="background: #CD7286;"></span><span><b>Anies 2-15% Lead</b> (Moderate lead)</span></li>
           <li class="legend-row" onmouseenter="highlightLegendCategory('close')" onmouseleave="resetLegendHighlight()"><span class="legend-chip" style="background: #EAA86D;"></span><span><b>Close Margin (&lt;2%)</b> (Swing battleground)</span></li>
-          <li class="legend-row" onmouseenter="highlightLegendMargin('prabowo-mod')" onmouseleave="resetLegendHighlight()"><span class="legend-chip" style="background: #A2C0D9;"></span><span><b>Prabowo 2-7% Lead</b> (Moderate lead)</span></li>
+          <li class="legend-row" onmouseenter="highlightLegendMargin('prabowo-mod')" onmouseleave="resetLegendHighlight()"><span class="legend-chip" style="background: #A2C0D9;"></span><span><b>Prabowo 2-15% Lead</b> (Moderate lead)</span></li>
           <li class="legend-row" onmouseenter="highlightLegendMargin('prabowo-high')" onmouseleave="resetLegendHighlight()"><span class="legend-chip" style="background: #486E8D;"></span><span><b>Prabowo &gt;15% Lead</b> (Decisive stronghold)</span></li>
+          <li class="legend-row" onmouseenter="highlightLegendMargin('ganjar-lead')" onmouseleave="resetLegendHighlight()"><span class="legend-chip" style="background: #75556B;"></span><span><b>Ganjar &gt;2% Lead</b> (Glodok &amp; Roa Malaka)</span></li>
         `;
       }} else if (mode === 'close') {{
         document.getElementById('btnClose').classList.add('active');
         title.innerHTML = 'Close battleground contests (Victory margin &lt; 2.0%):';
         items.innerHTML = `
-          <li class="legend-row"><span class="legend-chip" style="background: #EAA86D;"></span><span><b>Battleground Urban Villages (33 Villages, 12.6%)</b></span></li>
+          <li class="legend-row"><span class="legend-chip" style="background: #EAA86D;"></span><span><b>Battleground Urban Villages (35 Villages, 13.4%)</b></span></li>
           <li class="legend-row"><span class="legend-chip" style="background: #DED9CE;"></span><span>Decisive margin (&gt;2.0%)</span></li>
         `;
       }} else if (mode === 'density') {{
@@ -1752,16 +2164,19 @@ html_content = f'''<!DOCTYPE html>
         `;
       }} else if (mode === 'margin') {{
         titleElem.innerText = `${{titlePrefix}} Victory Margin Strength (${{total}} Kelurahan total):`;
-        let aHigh = 0, aMod = 0, close = 0, pMod = 0, pHigh = 0;
+        let aHigh = 0, aMod = 0, close = 0, pMod = 0, pHigh = 0, gLead = 0;
         filtered.forEach(f => {{
           const p = f.properties;
-          if (p.diff <= 2.0) close++;
-          else if (p.pct_anies > p.pct_prabowo) {{
+          if (p.diff <= 2.0) {{
+            close++;
+          }} else if (p.leader_code === '01') {{
             if (p.diff > 15.0) aHigh++;
             else aMod++;
-          }} else {{
+          }} else if (p.leader_code === '02') {{
             if (p.diff > 15.0) pHigh++;
             else pMod++;
+          }} else if (p.leader_code === '03') {{
+            gLead++;
           }}
         }});
 
@@ -1770,6 +2185,7 @@ html_content = f'''<!DOCTYPE html>
         const pC = ((close / total) * 100).toFixed(1);
         const ppM = ((pMod / total) * 100).toFixed(1);
         const ppH = ((pHigh / total) * 100).toFixed(1);
+        const pgL = ((gLead / total) * 100).toFixed(1);
 
         barContainer.innerHTML = `
           <div class="spec-segment" style="width: ${{paH}}%; background: #782438;" title="Anies >15%: ${{aHigh}} Vil"></div>
@@ -1777,6 +2193,7 @@ html_content = f'''<!DOCTYPE html>
           <div class="spec-segment" style="width: ${{pC}}%; background: #EAA86D;" title="Close <2%: ${{close}} Vil"></div>
           <div class="spec-segment" style="width: ${{ppM}}%; background: #A2C0D9;" title="Prabowo 2-15%: ${{pMod}} Vil"></div>
           <div class="spec-segment" style="width: ${{ppH}}%; background: #486E8D;" title="Prabowo >15%: ${{pHigh}} Vil"></div>
+          ${{gLead > 0 ? `<div class="spec-segment" style="width: ${{pgL}}%; background: #75556B;" title="Ganjar >2%: ${{gLead}} Vil"></div>` : ''}}
         `;
 
         labelsContainer.innerHTML = `
@@ -1785,6 +2202,7 @@ html_content = f'''<!DOCTYPE html>
           <span><b>Close &lt;2%:</b> ${{close}} (${{pC}}%)</span>
           <span><b>02 2-15%:</b> ${{pMod}} (${{ppM}}%)</span>
           <span><b>02 &gt;15%:</b> ${{pHigh}} (${{ppH}}%)</span>
+          ${{gLead > 0 ? `<span><b>03 &gt;2%:</b> ${{gLead}} (${{pgL}}%)</span>` : ''}}
         `;
       }} else if (mode === 'close') {{
         titleElem.innerText = `${{titlePrefix}} Battleground vs Decisive Margins (${{total}} Kelurahan total):`;
@@ -1843,6 +2261,7 @@ html_content = f'''<!DOCTYPE html>
     // Filter City (with All Jakarta reset support & dynamic spectrum)
     function filterCity(cityName) {{
       selectedCity = cityName;
+      closeMobileDrawer();
       if (currentFocusedLayer) {{
         currentFocusedLayer.closeTooltip();
         currentFocusedLayer = null;
@@ -1861,6 +2280,20 @@ html_content = f'''<!DOCTYPE html>
         if (cardElem) cardElem.classList.add('active');
       }}
       geojsonLayer.eachLayer(l => geojsonLayer.resetStyle(l));
+
+      // Dim non-selected hex labels
+      if (typeof hexLabelMarkers !== 'undefined') {{
+        hexLabelMarkers.forEach(item => {{
+          const el = document.getElementById(item.id);
+          if (!el) return;
+          if (!cityName || item.kota === cityName) {{
+            el.style.opacity = '1';
+          }} else {{
+            el.style.opacity = '0.20';
+          }}
+        }});
+      }}
+
       updateSpectrumBar(cityName);
     }}
 
@@ -1877,6 +2310,15 @@ html_content = f'''<!DOCTYPE html>
           geojsonLayer.resetStyle(l);
           l.closeTooltip();
         }});
+        if (typeof hexLabelMarkers !== 'undefined') {{
+          hexLabelMarkers.forEach(item => {{
+            const el = document.getElementById(item.id);
+            if (el) {{
+              el.style.opacity = '1';
+              el.style.fontWeight = '700';
+            }}
+          }});
+        }}
         return;
       }}
 
@@ -1911,6 +2353,9 @@ html_content = f'''<!DOCTYPE html>
       geojsonLayer.eachLayer(layer => {{
         const name = layer.feature.properties.kelurahan.toUpperCase();
         const kec = layer.feature.properties.kecamatan.toUpperCase();
+        const norm = layer.feature.properties.kelurahan.toUpperCase().replace(/[^A-Z0-9]/g, '');
+        const lbl = document.getElementById(`hexlbl-${{norm}}`);
+
         if (name.includes(q) || kec.includes(q)) {{
           layer.setStyle({{
             weight: 3.5,
@@ -1918,6 +2363,10 @@ html_content = f'''<!DOCTYPE html>
             fillOpacity: 1
           }});
           layer.bringToFront();
+          if (lbl) {{
+            lbl.style.opacity = '1';
+            lbl.style.fontWeight = '800';
+          }}
         }} else {{
           layer.setStyle({{
             fillOpacity: 0.15,
@@ -1925,6 +2374,9 @@ html_content = f'''<!DOCTYPE html>
             color: '#EEE'
           }});
           layer.closeTooltip();
+          if (lbl) {{
+            lbl.style.opacity = '0.20';
+          }}
         }}
       }});
     }}
@@ -1957,6 +2409,8 @@ html_content = f'''<!DOCTYPE html>
       const clearBtn = document.getElementById('searchClearBtn');
       if (clearBtn) clearBtn.style.display = 'none';
 
+      closeMobileDrawer();
+
       if (currentFocusedLayer) {{
         currentFocusedLayer.closeTooltip();
         currentFocusedLayer = null;
@@ -1965,6 +2419,15 @@ html_content = f'''<!DOCTYPE html>
         geojsonLayer.resetStyle(l);
         l.closeTooltip();
       }});
+      if (typeof hexLabelMarkers !== 'undefined') {{
+        hexLabelMarkers.forEach(item => {{
+          const el = document.getElementById(item.id);
+          if (el) {{
+            el.style.opacity = '1';
+            el.style.fontWeight = '700';
+          }}
+        }});
+      }}
     }}
 
     // Hide dropdown on document click
@@ -1976,7 +2439,7 @@ html_content = f'''<!DOCTYPE html>
       }}
     }});
 
-    // Click-to-Focus on Extremes cards (Strict Single Tooltip Focus)
+    // Click-to-Focus on Extremes cards (Strict Single Tooltip Focus & Mobile Drawer)
     function focusKelurahan(kelName) {{
       const norm = kelName.toUpperCase().replace(/[^A-Z0-9]/g, '');
       const layer = kelLayersMap[norm];
@@ -1999,7 +2462,12 @@ html_content = f'''<!DOCTYPE html>
           fillOpacity: 1
         }});
         layer.bringToFront();
-        layer.openTooltip();
+
+        if (window.innerWidth <= 768) {{
+          showMobileDrawer(layer.feature.properties);
+        }} else {{
+          layer.openTooltip();
+        }}
         
         // Scroll map smoothly into view if needed
         const mapElem = document.getElementById('mapViewport');
@@ -2009,8 +2477,85 @@ html_content = f'''<!DOCTYPE html>
       }}
     }}
 
-    // Close open focused tooltip when clicking map background
+    // Mobile Bottom Sheet Detail Drawer Controls (P2)
+    function showMobileDrawer(p) {{
+      const drawer = document.getElementById('mobileDetailDrawer');
+      const backdrop = document.getElementById('mobileDrawerBackdrop');
+      if (!drawer || !backdrop) return;
+
+      let p1Bold = (p.pct_anies >= p.pct_prabowo && p.pct_anies >= p.pct_ganjar) ? "lead" : "";
+      let p2Bold = (p.pct_prabowo >= p.pct_anies && p.pct_prabowo >= p.pct_ganjar) ? "lead" : "";
+      let p3Bold = (p.pct_ganjar >= p.pct_anies && p.pct_ganjar >= p.pct_prabowo) ? "lead" : "";
+
+      document.getElementById('drawerTitle').innerText = p.kelurahan;
+      document.getElementById('drawerSub').innerHTML = `<span class="tt-geo">${{p.kecamatan}}, ${{p.kota}}</span> &middot; <span class="tt-margin">${{p.margin_str}}</span>`;
+
+      document.getElementById('drawerBody').innerHTML = `
+        <div class="dw-tt-row ${{p1Bold}}">
+          <span class="c-cand-name">01 Anies - Muhaimin</span>
+          <span class="c-cand-val"><b>${{p.pct_anies}}%</b> <span class="c-cand-votes">(${{p.votes_anies.toLocaleString()}})</span></span>
+        </div>
+        <div class="dw-tt-bar-wrap">
+          <div class="dw-tt-bar-fill" style="width: ${{p.pct_anies}}%; background: var(--c-anies);"></div>
+        </div>
+
+        <div class="dw-tt-row ${{p2Bold}}">
+          <span class="c-cand-name">02 Prabowo - Gibran</span>
+          <span class="c-cand-val"><b>${{p.pct_prabowo}}%</b> <span class="c-cand-votes">(${{p.votes_prabowo.toLocaleString()}})</span></span>
+        </div>
+        <div class="dw-tt-bar-wrap">
+          <div class="dw-tt-bar-fill" style="width: ${{p.pct_prabowo}}%; background: var(--c-prabowo);"></div>
+        </div>
+
+        <div class="dw-tt-row ${{p3Bold}}">
+          <span class="c-cand-name">03 Ganjar - Mahfud</span>
+          <span class="c-cand-val"><b>${{p.pct_ganjar}}%</b> <span class="c-cand-votes">(${{p.votes_ganjar.toLocaleString()}})</span></span>
+        </div>
+        <div class="dw-tt-bar-wrap">
+          <div class="dw-tt-bar-fill" style="width: ${{p.pct_ganjar}}%; background: var(--c-ganjar);"></div>
+        </div>
+
+        <div class="dw-tt-total" style="margin-top: 12px; padding-top: 10px; border-top: 1px solid #ECE7DE;">
+          <span>Total Valid Ballots</span>
+          <span>${{p.total_votes.toLocaleString()}}</span>
+        </div>
+      `;
+
+      backdrop.classList.add('active');
+      drawer.classList.add('active');
+    }}
+
+    function closeMobileDrawer() {{
+      const drawer = document.getElementById('mobileDetailDrawer');
+      const backdrop = document.getElementById('mobileDrawerBackdrop');
+      if (drawer) drawer.classList.remove('active');
+      if (backdrop) backdrop.classList.remove('active');
+    }}
+
+    // Touch swipe down to dismiss mobile drawer
+    (function() {{
+      const drawer = document.getElementById('mobileDetailDrawer');
+      if (!drawer) return;
+      let startY = 0;
+      let currentY = 0;
+      drawer.addEventListener('touchstart', function(e) {{
+        startY = e.touches[0].clientY;
+      }}, {{ passive: true }});
+      drawer.addEventListener('touchmove', function(e) {{
+        currentY = e.touches[0].clientY;
+      }}, {{ passive: true }});
+      drawer.addEventListener('touchend', function() {{
+        if (currentY - startY > 60) {{
+          closeMobileDrawer();
+        }}
+        startY = 0;
+        currentY = 0;
+      }});
+    }})();
+
+    // Close open focused tooltip or mobile drawer when clicking map background
     map.on('click', function() {{
+      closeMobileDrawer();
       if (currentFocusedLayer) {{
         currentFocusedLayer.closeTooltip();
         geojsonLayer.resetStyle(currentFocusedLayer);
@@ -2041,10 +2586,11 @@ html_content = f'''<!DOCTYPE html>
       geojsonLayer.eachLayer(layer => {{
         const p = layer.feature.properties;
         let match = false;
-        if (marginCat === 'anies-high' && p.pct_anies > p.pct_prabowo && p.diff > 15) match = true;
-        if (marginCat === 'anies-mod' && p.pct_anies > p.pct_prabowo && p.diff >= 2 && p.diff <= 15) match = true;
-        if (marginCat === 'prabowo-mod' && p.pct_prabowo > p.pct_anies && p.diff >= 2 && p.diff <= 15) match = true;
-        if (marginCat === 'prabowo-high' && p.pct_prabowo > p.pct_anies && p.diff > 15) match = true;
+        if (marginCat === 'anies-high' && p.leader_code === '01' && p.diff > 15) match = true;
+        if (marginCat === 'anies-mod' && p.leader_code === '01' && p.diff >= 2 && p.diff <= 15) match = true;
+        if (marginCat === 'prabowo-mod' && p.leader_code === '02' && p.diff >= 2 && p.diff <= 15) match = true;
+        if (marginCat === 'prabowo-high' && p.leader_code === '02' && p.diff > 15) match = true;
+        if (marginCat === 'ganjar-lead' && p.leader_code === '03' && p.diff > 2) match = true;
 
         if (match) {{
           layer.setStyle({{ fillOpacity: 1, weight: 2, color: '#111' }});
@@ -2143,6 +2689,12 @@ html_content = f'''<!DOCTYPE html>
           const dropdown = clonedDoc.getElementById('searchDropdown');
           if (dropdown) dropdown.style.display = 'none';
 
+          // Hide mobile drawer and backdrop in publication export
+          const clonedDrawer = clonedDoc.getElementById('mobileDetailDrawer');
+          if (clonedDrawer) clonedDrawer.style.display = 'none';
+          const clonedBackdrop = clonedDoc.getElementById('mobileDrawerBackdrop');
+          if (clonedBackdrop) clonedBackdrop.style.display = 'none';
+
           // Clean up basemap controls for publication export
           const basemapWrap = clonedDoc.querySelector('.basemap-toggle-wrap');
           if (basemapWrap) {{
@@ -2157,20 +2709,28 @@ html_content = f'''<!DOCTYPE html>
             }}
           }}
 
+          // Clean up labels toggle for publication export
+          const labelsWrap = clonedDoc.querySelector('.labels-toggle-wrap');
+          if (labelsWrap) {{
+            const chkLbl = document.getElementById('chkHexLabels');
+            const isLblChecked = chkLbl && chkLbl.checked;
+            labelsWrap.innerHTML = `<span style="font-size:0.75rem; font-weight:700; color:#333;">🏷️ Labels: ${{isLblChecked ? 'On' : 'Off'}}</span>`;
+          }}
+
           // 2. Ensure all cloned tiles are also pure grayscale
           convertTilesToGrayscale(clonedDoc);
         }}
       }}).then(canvas => {{
         const link = document.createElement('a');
-        link.download = 'The_Sound_of_Jakarta_Election_Map_4K.png';
+        link.download = 'The_Voice_of_Jakarta_Election_Map_4K.png';
         link.href = canvas.toDataURL('image/png', 1.0);
         link.click();
-        btn.innerText = '📸 Export PNG';
+        btn.innerText = 'Download';
         btn.style.opacity = '1';
         window.scrollTo(0, originalScrollY);
       }}).catch(err => {{
         console.error('Export error:', err);
-        btn.innerText = '📸 Export PNG';
+        btn.innerText = 'Download';
         btn.style.opacity = '1';
         window.scrollTo(0, originalScrollY);
         alert('Export error, please try again.');
