@@ -1719,21 +1719,21 @@
       <div class="legend-card" id="legendContainer">
         <div class="legend-title" id="legendTitle">Most common candidate preference by urban village:</div>
         <ul class="legend-list" id="legendItems">
-          <li class="legend-row" onmouseenter="highlightLegendCategory('prabowo')" onmouseleave="resetLegendHighlight()">
-            <span class="legend-chip" style="background: var(--c-prabowo);"></span>
-            <span><b>Prabowo - Gibran</b> (Northern ports & Western commercial districts)</span>
-          </li>
           <li class="legend-row" onmouseenter="highlightLegendCategory('anies')" onmouseleave="resetLegendHighlight()">
             <span class="legend-chip" style="background: var(--c-anies);"></span>
             <span><b>Anies - Muhaimin</b> (Eastern & Southern residential belts)</span>
           </li>
-          <li class="legend-row" onmouseenter="highlightLegendCategory('close')" onmouseleave="resetLegendHighlight()">
-            <span class="legend-chip" style="background: var(--c-close);"></span>
-            <span><b>Close contest</b> (Difference &lt;2.0% victory margin between top two candidates)</span>
+          <li class="legend-row" onmouseenter="highlightLegendCategory('prabowo')" onmouseleave="resetLegendHighlight()">
+            <span class="legend-chip" style="background: var(--c-prabowo);"></span>
+            <span><b>Prabowo - Gibran</b> (Northern ports & Western commercial districts)</span>
           </li>
           <li class="legend-row" onmouseenter="highlightLegendCategory('ganjar')" onmouseleave="resetLegendHighlight()">
             <span class="legend-chip" style="background: var(--c-ganjar);"></span>
             <span><b>Ganjar - Mahfud</b></span>
+          </li>
+          <li class="legend-row" onmouseenter="highlightLegendCategory('close')" onmouseleave="resetLegendHighlight()">
+            <span class="legend-chip" style="background: var(--c-close);"></span>
+            <span><b>Close contest</b> (Difference &lt;2.0% victory margin between top two candidates)</span>
           </li>
         </ul>
 
@@ -2215,10 +2215,10 @@
         document.getElementById('btnPlurality').classList.add('active');
         title.innerHTML = 'Most common candidate preference by urban village:';
         items.innerHTML = `
-          <li class="legend-row" onmouseenter="highlightLegendCategory('prabowo')" onmouseleave="resetLegendHighlight()"><span class="legend-chip" style="background: var(--c-prabowo);"></span><span><b>Prabowo - Gibran</b> (Northern ports & Western commercial districts)</span></li>
           <li class="legend-row" onmouseenter="highlightLegendCategory('anies')" onmouseleave="resetLegendHighlight()"><span class="legend-chip" style="background: var(--c-anies);"></span><span><b>Anies - Muhaimin</b> (Eastern & Southern residential belts)</span></li>
-          <li class="legend-row" onmouseenter="highlightLegendCategory('close')" onmouseleave="resetLegendHighlight()"><span class="legend-chip" style="background: var(--c-close);"></span><span><b>Close contest</b> (&lt;2.0% victory margin between top two)</span></li>
+          <li class="legend-row" onmouseenter="highlightLegendCategory('prabowo')" onmouseleave="resetLegendHighlight()"><span class="legend-chip" style="background: var(--c-prabowo);"></span><span><b>Prabowo - Gibran</b> (Northern ports & Western commercial districts)</span></li>
           <li class="legend-row" onmouseenter="highlightLegendCategory('ganjar')" onmouseleave="resetLegendHighlight()"><span class="legend-chip" style="background: var(--c-ganjar);"></span><span><b>Ganjar - Mahfud</b></span></li>
+          <li class="legend-row" onmouseenter="highlightLegendCategory('close')" onmouseleave="resetLegendHighlight()"><span class="legend-chip" style="background: var(--c-close);"></span><span><b>Close contest</b> (&lt;2.0% victory margin between top two)</span></li>
         `;
       } else if (mode === 'margin') {
         document.getElementById('btnMargin').classList.add('active');
@@ -2226,10 +2226,10 @@
         items.innerHTML = `
           <li class="legend-row" onmouseenter="highlightLegendMargin('anies-high')" onmouseleave="resetLegendHighlight()"><span class="legend-chip" style="background: #782438;"></span><span><b>Anies &gt;15% Lead</b> (Decisive landslide)</span></li>
           <li class="legend-row" onmouseenter="highlightLegendMargin('anies-mod')" onmouseleave="resetLegendHighlight()"><span class="legend-chip" style="background: #CD7286;"></span><span><b>Anies 2-15% Lead</b> (Moderate lead)</span></li>
-          <li class="legend-row" onmouseenter="highlightLegendCategory('close')" onmouseleave="resetLegendHighlight()"><span class="legend-chip" style="background: #EAA86D;"></span><span><b>Close Margin (&lt;2%)</b> (Swing battleground)</span></li>
-          <li class="legend-row" onmouseenter="highlightLegendMargin('prabowo-mod')" onmouseleave="resetLegendHighlight()"><span class="legend-chip" style="background: #A2C0D9;"></span><span><b>Prabowo 2-15% Lead</b> (Moderate lead)</span></li>
           <li class="legend-row" onmouseenter="highlightLegendMargin('prabowo-high')" onmouseleave="resetLegendHighlight()"><span class="legend-chip" style="background: #486E8D;"></span><span><b>Prabowo &gt;15% Lead</b> (Decisive stronghold)</span></li>
+          <li class="legend-row" onmouseenter="highlightLegendMargin('prabowo-mod')" onmouseleave="resetLegendHighlight()"><span class="legend-chip" style="background: #A2C0D9;"></span><span><b>Prabowo 2-15% Lead</b> (Moderate lead)</span></li>
           <li class="legend-row" onmouseenter="highlightLegendMargin('ganjar-lead')" onmouseleave="resetLegendHighlight()"><span class="legend-chip" style="background: #75556B;"></span><span><b>Ganjar &gt;2% Lead</b> (Glodok &amp; Roa Malaka)</span></li>
+          <li class="legend-row" onmouseenter="highlightLegendCategory('close')" onmouseleave="resetLegendHighlight()"><span class="legend-chip" style="background: #EAA86D;"></span><span><b>Close Margin (&lt;2%)</b> (Swing battleground)</span></li>
         `;
       } else if (mode === 'close') {
         document.getElementById('btnClose').classList.add('active');
