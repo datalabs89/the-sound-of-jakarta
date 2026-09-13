@@ -86,13 +86,9 @@ for node in nodes:
         else:
             c_stat["ganjar_kel"] += 1
         
-        # Plurality default
-        if diff <= 2.0:
-            winner_label = "Close Contest (<2% margin)"
-            color = "#EAA86D"
-        else:
-            winner_label = lead_name
-            color = first["color"]
+        # Plurality default (Option A: True Plurality Winner by 1st place)
+        winner_label = lead_name
+        color = first["color"]
             
         # Margin color shade and description
         if diff <= 2.0:
@@ -1950,37 +1946,31 @@ html_content = f'''<!DOCTYPE html>
       <div class="legend-card" id="legendContainer">
         <div class="legend-title" id="legendTitle">Most common candidate preference by urban village:</div>
         <ul class="legend-list" id="legendItems">
-          <li class="legend-row" onmouseenter="highlightLegendCategory('anies')" onmouseleave="resetLegendHighlight()">
+          <li class="legend-row" onmouseenter="highlightLegendCategory('01')" onmouseleave="resetLegendHighlight()">
             <span class="legend-chip" style="background: var(--c-anies);"></span>
-            <span><b>Anies - Muhaimin</b> (Eastern & Southern residential belts)</span>
+            <span><b>01 Anies - Muhaimin</b> &mdash; 132 Villages (50.6%) &middot; South &amp; East residential belts</span>
           </li>
-          <li class="legend-row" onmouseenter="highlightLegendCategory('prabowo')" onmouseleave="resetLegendHighlight()">
+          <li class="legend-row" onmouseenter="highlightLegendCategory('02')" onmouseleave="resetLegendHighlight()">
             <span class="legend-chip" style="background: var(--c-prabowo);"></span>
-            <span><b>Prabowo - Gibran</b> (Northern ports & Western commercial districts)</span>
+            <span><b>02 Prabowo - Gibran</b> &mdash; 126 Villages (48.3%) &middot; North ports &amp; West commercial hubs</span>
           </li>
-          <li class="legend-row" onmouseenter="highlightLegendCategory('ganjar')" onmouseleave="resetLegendHighlight()">
+          <li class="legend-row" onmouseenter="highlightLegendCategory('03')" onmouseleave="resetLegendHighlight()">
             <span class="legend-chip" style="background: var(--c-ganjar);"></span>
-            <span><b>Ganjar - Mahfud</b></span>
-          </li>
-          <li class="legend-row" onmouseenter="highlightLegendCategory('close')" onmouseleave="resetLegendHighlight()">
-            <span class="legend-chip" style="background: var(--c-close);"></span>
-            <span><b>Close contest</b> (Difference &lt;2.0% victory margin between top two candidates)</span>
+            <span><b>03 Ganjar - Mahfud</b> &mdash; 3 Villages (1.1%) &middot; West Chinatown &amp; Kelapa Gading</span>
           </li>
         </ul>
 
         <!-- SEAT / KELURAHAN DISTRIBUTION SPECTRUM -->
-        <div class="spectrum-title" id="spectrumTitle">Urban Village Distribution Breakdown (261 total):</div>
+        <div class="spectrum-title" id="spectrumTitle">Urban Village Plurality Breakdown (261 total):</div>
         <div class="spectrum-bar" id="spectrumBar">
-          <div class="spec-segment" id="specAnies" style="width: 45.6%; background: var(--c-anies);" title="Anies: 119 Villages"></div>
-          <div class="spec-segment" id="specPrabowo" style="width: 40.2%; background: var(--c-prabowo);" title="Prabowo: 105 Villages"></div>
-          <div class="spec-segment" id="specGanjar" style="width: 0.8%; background: var(--c-ganjar);" title="Ganjar: 2 Villages"></div>
-          <div class="spec-segment" id="specClose" style="width: 13.4%; background: var(--c-close);" title="Close: 35 Villages"></div>
+          <div class="spec-segment" id="specAnies" style="width: 50.6%; background: var(--c-anies);" title="Anies: 132 Villages"></div>
+          <div class="spec-segment" id="specPrabowo" style="width: 48.3%; background: var(--c-prabowo);" title="Prabowo: 126 Villages"></div>
+          <div class="spec-segment" id="specGanjar" style="width: 1.1%; background: var(--c-ganjar);" title="Ganjar: 3 Villages"></div>
         </div>
         <div class="spectrum-labels" id="spectrumLabels">
-          <span><b>01 Anies:</b> <span id="lblAnies">119 Villages (45.6%)</span></span>
-          <span><b>02 Prabowo:</b> <span id="lblPrabowo">105 Villages (40.2%)</span></span>
-          <span><b>03 Ganjar:</b> <span id="lblGanjar">2 Villages (0.8%)</span></span>
-          <span><b>Close &lt;2%:</b> <span id="lblClose">35 Villages (13.4%)</span></span>
+          <span><b>01 Anies:</b> <span id="lblAnies">132 Villages (50.6%)</span></span>
+          <span><b>02 Prabowo:</b> <span id="lblPrabowo">126 Villages (48.3%)</span></span>
+          <span><b>03 Ganjar:</b> <span id="lblGanjar">3 Villages (1.1%)</span></span>
         </div>
       </div>
     </div>
@@ -2446,10 +2436,9 @@ html_content = f'''<!DOCTYPE html>
         document.getElementById('btnPlurality').classList.add('active');
         title.innerHTML = 'Most common candidate preference by urban village:';
         items.innerHTML = `
-          <li class="legend-row" onmouseenter="highlightLegendCategory('anies')" onmouseleave="resetLegendHighlight()"><span class="legend-chip" style="background: var(--c-anies);"></span><span><b>Anies - Muhaimin</b> (Eastern & Southern residential belts)</span></li>
-          <li class="legend-row" onmouseenter="highlightLegendCategory('prabowo')" onmouseleave="resetLegendHighlight()"><span class="legend-chip" style="background: var(--c-prabowo);"></span><span><b>Prabowo - Gibran</b> (Northern ports & Western commercial districts)</span></li>
-          <li class="legend-row" onmouseenter="highlightLegendCategory('ganjar')" onmouseleave="resetLegendHighlight()"><span class="legend-chip" style="background: var(--c-ganjar);"></span><span><b>Ganjar - Mahfud</b></span></li>
-          <li class="legend-row" onmouseenter="highlightLegendCategory('close')" onmouseleave="resetLegendHighlight()"><span class="legend-chip" style="background: var(--c-close);"></span><span><b>Close contest</b> (&lt;2.0% victory margin between top two)</span></li>
+          <li class="legend-row" onmouseenter="highlightLegendCategory('01')" onmouseleave="resetLegendHighlight()"><span class="legend-chip" style="background: var(--c-anies);"></span><span><b>01 Anies - Muhaimin</b> &mdash; 132 Villages (50.6%) &middot; South &amp; East residential belts</span></li>
+          <li class="legend-row" onmouseenter="highlightLegendCategory('02')" onmouseleave="resetLegendHighlight()"><span class="legend-chip" style="background: var(--c-prabowo);"></span><span><b>02 Prabowo - Gibran</b> &mdash; 126 Villages (48.3%) &middot; North ports &amp; West commercial hubs</span></li>
+          <li class="legend-row" onmouseenter="highlightLegendCategory('03')" onmouseleave="resetLegendHighlight()"><span class="legend-chip" style="background: var(--c-ganjar);"></span><span><b>03 Ganjar - Mahfud</b> &mdash; 3 Villages (1.1%) &middot; West Chinatown &amp; Kelapa Gading</span></li>
         `;
       }} else if (mode === 'margin') {{
         document.getElementById('btnMargin').classList.add('active');
@@ -2466,8 +2455,8 @@ html_content = f'''<!DOCTYPE html>
         document.getElementById('btnClose').classList.add('active');
         title.innerHTML = 'Close battleground contests (Victory margin &lt; 2.0%):';
         items.innerHTML = `
-          <li class="legend-row"><span class="legend-chip" style="background: #EAA86D;"></span><span><b>Battleground Urban Villages (35 Villages, 13.4%)</b></span></li>
-          <li class="legend-row"><span class="legend-chip" style="background: #DED9CE;"></span><span>Decisive margin (&gt;2.0%)</span></li>
+          <li class="legend-row" onmouseenter="highlightLegendClose('battleground')" onmouseleave="resetLegendHighlight()"><span class="legend-chip" style="background: #EAA86D;"></span><span><b>Battleground Villages (35 Villages, 13.4%)</b> &mdash; 02 won 21 &middot; 01 won 13 &middot; 03 won 1</span></li>
+          <li class="legend-row" onmouseenter="highlightLegendClose('decisive')" onmouseleave="resetLegendHighlight()"><span class="legend-chip" style="background: #DED9CE;"></span><span><b>Decisive Margin (226 Villages, 86.6%)</b> &mdash; Difference &gt;2.0%</span></li>
         `;
       }} else if (mode === 'density') {{
         document.getElementById('btnDensity').classList.add('active');
@@ -2497,32 +2486,28 @@ html_content = f'''<!DOCTYPE html>
 
       if (mode === 'plurality') {{
         titleElem.innerText = `${{titlePrefix}} Plurality Distribution (${{total}} total):`;
-        let anies = 0, prabowo = 0, close = 0, ganjar = 0;
+        let anies = 0, prabowo = 0, ganjar = 0;
         filtered.forEach(f => {{
-          const w = f.properties.winner;
-          if (w.includes("Close")) close++;
-          else if (w.includes("Anies")) anies++;
-          else if (w.includes("Prabowo")) prabowo++;
-          else if (w.includes("Ganjar")) ganjar++;
+          const c = f.properties.leader_code;
+          if (c === "01") anies++;
+          else if (c === "02") prabowo++;
+          else if (c === "03") ganjar++;
         }});
 
         const pA = ((anies / total) * 100).toFixed(1);
         const pP = ((prabowo / total) * 100).toFixed(1);
         const pG = ((ganjar / total) * 100).toFixed(1);
-        const pC = ((close / total) * 100).toFixed(1);
 
         barContainer.innerHTML = `
           <div class="spec-segment" style="width: ${{pA}}%; background: var(--c-anies);" title="Anies: ${{anies}} Vil"></div>
           <div class="spec-segment" style="width: ${{pP}}%; background: var(--c-prabowo);" title="Prabowo: ${{prabowo}} Vil"></div>
           ${{ganjar > 0 ? `<div class="spec-segment" style="width: ${{pG}}%; background: var(--c-ganjar);" title="Ganjar: ${{ganjar}} Vil"></div>` : ''}}
-          <div class="spec-segment" style="width: ${{pC}}%; background: var(--c-close);" title="Close: ${{close}} Vil"></div>
         `;
 
         labelsContainer.innerHTML = `
           <span><b>01 Anies:</b> ${{anies}} Vil (${{pA}}%)</span>
           <span><b>02 Prabowo:</b> ${{prabowo}} Vil (${{pP}}%)</span>
           ${{ganjar > 0 ? `<span><b>03 Ganjar:</b> ${{ganjar}} Vil (${{pG}}%)</span>` : ''}}
-          <span><b>Close &lt;2%:</b> ${{close}} Vil (${{pC}}%)</span>
         `;
       }} else if (mode === 'margin') {{
         titleElem.innerText = `${{titlePrefix}} Victory Margin Strength (${{total}} total):`;
@@ -2928,12 +2913,28 @@ html_content = f'''<!DOCTYPE html>
     // Legend Hover Highlighting
     function highlightLegendCategory(category) {{
       geojsonLayer.eachLayer(layer => {{
-        const w = layer.feature.properties.winner;
+        const p = layer.feature.properties;
         let match = false;
-        if (category === 'prabowo' && w.includes('Prabowo')) match = true;
-        if (category === 'anies' && w.includes('Anies')) match = true;
-        if (category === 'close' && w.includes('Close')) match = true;
-        if (category === 'ganjar' && w.includes('Ganjar')) match = true;
+        if ((category === '01' || category === 'anies') && p.leader_code === '01') match = true;
+        if ((category === '02' || category === 'prabowo') && p.leader_code === '02') match = true;
+        if ((category === '03' || category === 'ganjar') && p.leader_code === '03') match = true;
+        if (category === 'close' && p.diff <= 2.0) match = true;
+
+        if (match) {{
+          layer.setStyle({{ fillOpacity: 1, weight: 2, color: '#111' }});
+          layer.bringToFront();
+        }} else {{
+          layer.setStyle({{ fillOpacity: 0.18, weight: 0.5, color: '#DDD' }});
+        }}
+      }});
+    }}
+
+    function highlightLegendClose(closeCat) {{
+      geojsonLayer.eachLayer(layer => {{
+        const p = layer.feature.properties;
+        let match = false;
+        if (closeCat === 'battleground' && p.diff <= 2.0) match = true;
+        if (closeCat === 'decisive' && p.diff > 2.0) match = true;
 
         if (match) {{
           layer.setStyle({{ fillOpacity: 1, weight: 2, color: '#111' }});
