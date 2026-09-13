@@ -2330,7 +2330,6 @@ html_content = f'''<!DOCTYPE html>
     const perimeterCityLabels = [
       {{
         name: "North Jakarta",
-        count: "31 Villages",
         kota: "JAKARTA UTARA",
         color: "#486E8D",
         lat: -6.0460,
@@ -2338,7 +2337,6 @@ html_content = f'''<!DOCTYPE html>
       }},
       {{
         name: "West Jakarta",
-        count: "56 Villages",
         kota: "JAKARTA BARAT",
         color: "#486E8D",
         lat: -6.1428,
@@ -2346,7 +2344,6 @@ html_content = f'''<!DOCTYPE html>
       }},
       {{
         name: "Central Jakarta",
-        count: "44 Villages",
         kota: "JAKARTA PUSAT",
         color: "#AF4D64",
         lat: -6.0964,
@@ -2354,7 +2351,6 @@ html_content = f'''<!DOCTYPE html>
       }},
       {{
         name: "East Jakarta",
-        count: "65 Villages",
         kota: "JAKARTA TIMUR",
         color: "#AF4D64",
         lat: -6.1555,
@@ -2362,7 +2358,6 @@ html_content = f'''<!DOCTYPE html>
       }},
       {{
         name: "South Jakarta",
-        count: "65 Villages",
         kota: "JAKARTA SELATAN",
         color: "#AF4D64",
         lat: -6.2980,
@@ -2378,11 +2373,10 @@ html_content = f'''<!DOCTYPE html>
           <div class="city-perimeter-label" onclick="filterCity('${{c.kota}}')">
             <span class="c-line" style="background:${{c.color}}"></span>
             <span class="c-name">${{c.name}}</span>
-            <span class="c-badge">${{c.count}}</span>
           </div>
         `,
-        iconSize: [175, 28],
-        iconAnchor: [87, 14]
+        iconSize: [140, 26],
+        iconAnchor: [70, 13]
       }});
 
       const m = L.marker([c.lat, c.lng], {{ icon: customIcon, interactive: true }}).addTo(map);
