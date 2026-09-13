@@ -1972,15 +1972,15 @@ html_content = f'''<!DOCTYPE html>
         <div class="spectrum-title" id="spectrumTitle">Urban Village Distribution Breakdown (261 total):</div>
         <div class="spectrum-bar" id="spectrumBar">
           <div class="spec-segment" id="specAnies" style="width: 45.6%; background: var(--c-anies);" title="Anies: 119 Villages"></div>
-          <div class="spec-segment" id="specClose" style="width: 13.4%; background: var(--c-close);" title="Close: 35 Villages"></div>
           <div class="spec-segment" id="specPrabowo" style="width: 40.2%; background: var(--c-prabowo);" title="Prabowo: 105 Villages"></div>
           <div class="spec-segment" id="specGanjar" style="width: 0.8%; background: var(--c-ganjar);" title="Ganjar: 2 Villages"></div>
+          <div class="spec-segment" id="specClose" style="width: 13.4%; background: var(--c-close);" title="Close: 35 Villages"></div>
         </div>
         <div class="spectrum-labels" id="spectrumLabels">
           <span><b>01 Anies:</b> <span id="lblAnies">119 Villages (45.6%)</span></span>
-          <span><b>Close &lt;2%:</b> <span id="lblClose">35 Villages (13.4%)</span></span>
           <span><b>02 Prabowo:</b> <span id="lblPrabowo">105 Villages (40.2%)</span></span>
           <span><b>03 Ganjar:</b> <span id="lblGanjar">2 Villages (0.8%)</span></span>
+          <span><b>Close &lt;2%:</b> <span id="lblClose">35 Villages (13.4%)</span></span>
         </div>
       </div>
     </div>
@@ -2507,22 +2507,22 @@ html_content = f'''<!DOCTYPE html>
         }});
 
         const pA = ((anies / total) * 100).toFixed(1);
-        const pC = ((close / total) * 100).toFixed(1);
         const pP = ((prabowo / total) * 100).toFixed(1);
         const pG = ((ganjar / total) * 100).toFixed(1);
+        const pC = ((close / total) * 100).toFixed(1);
 
         barContainer.innerHTML = `
           <div class="spec-segment" style="width: ${{pA}}%; background: var(--c-anies);" title="Anies: ${{anies}} Vil"></div>
-          <div class="spec-segment" style="width: ${{pC}}%; background: var(--c-close);" title="Close: ${{close}} Vil"></div>
           <div class="spec-segment" style="width: ${{pP}}%; background: var(--c-prabowo);" title="Prabowo: ${{prabowo}} Vil"></div>
-          <div class="spec-segment" style="width: ${{pG}}%; background: var(--c-ganjar);" title="Ganjar: ${{ganjar}} Vil"></div>
+          ${{ganjar > 0 ? `<div class="spec-segment" style="width: ${{pG}}%; background: var(--c-ganjar);" title="Ganjar: ${{ganjar}} Vil"></div>` : ''}}
+          <div class="spec-segment" style="width: ${{pC}}%; background: var(--c-close);" title="Close: ${{close}} Vil"></div>
         `;
 
         labelsContainer.innerHTML = `
           <span><b>01 Anies:</b> ${{anies}} Vil (${{pA}}%)</span>
-          <span><b>Close &lt;2%:</b> ${{close}} Vil (${{pC}}%)</span>
           <span><b>02 Prabowo:</b> ${{prabowo}} Vil (${{pP}}%)</span>
           ${{ganjar > 0 ? `<span><b>03 Ganjar:</b> ${{ganjar}} Vil (${{pG}}%)</span>` : ''}}
+          <span><b>Close &lt;2%:</b> ${{close}} Vil (${{pC}}%)</span>
         `;
       }} else if (mode === 'margin') {{
         titleElem.innerText = `${{titlePrefix}} Victory Margin Strength (${{total}} total):`;
@@ -2544,27 +2544,27 @@ html_content = f'''<!DOCTYPE html>
 
         const paH = ((aHigh / total) * 100).toFixed(1);
         const paM = ((aMod / total) * 100).toFixed(1);
-        const pC = ((close / total) * 100).toFixed(1);
-        const ppM = ((pMod / total) * 100).toFixed(1);
         const ppH = ((pHigh / total) * 100).toFixed(1);
+        const ppM = ((pMod / total) * 100).toFixed(1);
         const pgL = ((gLead / total) * 100).toFixed(1);
+        const pC = ((close / total) * 100).toFixed(1);
 
         barContainer.innerHTML = `
           <div class="spec-segment" style="width: ${{paH}}%; background: #782438;" title="Anies >15%: ${{aHigh}} Vil"></div>
           <div class="spec-segment" style="width: ${{paM}}%; background: #CD7286;" title="Anies 2-15%: ${{aMod}} Vil"></div>
-          <div class="spec-segment" style="width: ${{pC}}%; background: #EAA86D;" title="Close <2%: ${{close}} Vil"></div>
-          <div class="spec-segment" style="width: ${{ppM}}%; background: #A2C0D9;" title="Prabowo 2-15%: ${{pMod}} Vil"></div>
           <div class="spec-segment" style="width: ${{ppH}}%; background: #486E8D;" title="Prabowo >15%: ${{pHigh}} Vil"></div>
+          <div class="spec-segment" style="width: ${{ppM}}%; background: #A2C0D9;" title="Prabowo 2-15%: ${{pMod}} Vil"></div>
           ${{gLead > 0 ? `<div class="spec-segment" style="width: ${{pgL}}%; background: #75556B;" title="Ganjar >2%: ${{gLead}} Vil"></div>` : ''}}
+          <div class="spec-segment" style="width: ${{pC}}%; background: #EAA86D;" title="Close <2%: ${{close}} Vil"></div>
         `;
 
         labelsContainer.innerHTML = `
           <span><b>01 &gt;15%:</b> ${{aHigh}} (${{paH}}%)</span>
           <span><b>01 2-15%:</b> ${{aMod}} (${{paM}}%)</span>
-          <span><b>Close &lt;2%:</b> ${{close}} (${{pC}}%)</span>
-          <span><b>02 2-15%:</b> ${{pMod}} (${{ppM}}%)</span>
           <span><b>02 &gt;15%:</b> ${{pHigh}} (${{ppH}}%)</span>
+          <span><b>02 2-15%:</b> ${{pMod}} (${{ppM}}%)</span>
           ${{gLead > 0 ? `<span><b>03 &gt;2%:</b> ${{gLead}} (${{pgL}}%)</span>` : ''}}
+          <span><b>Close &lt;2%:</b> ${{close}} (${{pC}}%)</span>
         `;
       }} else if (mode === 'close') {{
         titleElem.innerText = `${{titlePrefix}} Battleground vs Decisive Margins (${{total}} total):`;
