@@ -733,6 +733,25 @@
       transition: opacity 0.2s ease, font-size 0.15s ease;
     }
 
+    .basemap-toggle-wrap {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 0.74rem;
+      font-weight: 700;
+      color: #333333;
+      background: #ECE7DE;
+      padding: 5px 9px;
+      border-radius: 3px;
+      border: 1px solid #D6CEBE;
+      user-select: none;
+      transition: all 0.15s ease;
+    }
+
+    .basemap-toggle-wrap:hover {
+      background: #E4DEC5;
+    }
+
     .labels-toggle-wrap {
       display: flex;
       align-items: center;
@@ -751,6 +770,123 @@
 
     .labels-toggle-wrap:hover {
       background: #E4DEC5;
+    }
+
+    /* Solid Grayscale Checkbox Styling (Override OS / Browser Blue) */
+    .basemap-toggle-wrap input[type="checkbox"],
+    .labels-toggle-wrap input[type="checkbox"],
+    #chkBasemap,
+    #chkHexLabels {
+      accent-color: #111111 !important;
+      cursor: pointer;
+      width: 14px;
+      height: 14px;
+      margin: 0;
+      vertical-align: middle;
+    }
+
+    #chkBasemap:focus-visible,
+    #chkHexLabels:focus-visible {
+      outline: 2px solid #111111;
+      outline-offset: 1px;
+    }
+
+    /* Solid Grayscale Range Slider Styling (Override OS / Browser Blue) */
+    #basemapOpacity {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 65px;
+      height: 4px;
+      background: #C4BCAC;
+      border-radius: 2px;
+      outline: none;
+      cursor: pointer;
+      vertical-align: middle;
+      accent-color: #111111 !important;
+      transition: background 0.15s ease;
+    }
+
+    #basemapOpacity:focus {
+      outline: none;
+    }
+
+    #basemapOpacity:focus-visible {
+      outline: 2px solid #111111;
+      outline-offset: 2px;
+    }
+
+    /* WebKit (Chrome, Safari, Edge, Opera) Track */
+    #basemapOpacity::-webkit-slider-runnable-track {
+      width: 100%;
+      height: 4px;
+      cursor: pointer;
+      background: #C4BCAC;
+      border-radius: 2px;
+      border: none;
+    }
+
+    /* WebKit Thumb */
+    #basemapOpacity::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      height: 13px;
+      width: 13px;
+      border-radius: 50%;
+      background: #111111;
+      border: 2px solid #FFFFFF;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
+      cursor: pointer;
+      margin-top: -4.5px;
+      transition: transform 0.1s ease, background 0.15s ease;
+    }
+
+    #basemapOpacity::-webkit-slider-thumb:hover {
+      background: #2B2B2B;
+      transform: scale(1.15);
+    }
+
+    #basemapOpacity::-webkit-slider-thumb:active {
+      background: #000000;
+      transform: scale(1.2);
+    }
+
+    /* Firefox Track */
+    #basemapOpacity::-moz-range-track {
+      width: 100%;
+      height: 4px;
+      cursor: pointer;
+      background: #C4BCAC;
+      border-radius: 2px;
+      border: none;
+    }
+
+    /* Firefox Progress (before thumb) */
+    #basemapOpacity::-moz-range-progress {
+      background: #111111;
+      height: 4px;
+      border-radius: 2px;
+    }
+
+    /* Firefox Thumb */
+    #basemapOpacity::-moz-range-thumb {
+      height: 13px;
+      width: 13px;
+      border-radius: 50%;
+      background: #111111;
+      border: 2px solid #FFFFFF;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
+      cursor: pointer;
+      transition: transform 0.1s ease, background 0.15s ease;
+    }
+
+    #basemapOpacity::-moz-range-thumb:hover {
+      background: #2B2B2B;
+      transform: scale(1.15);
+    }
+
+    #basemapOpacity::-moz-range-thumb:active {
+      background: #000000;
+      transform: scale(1.2);
     }
 
     /* MOBILE BOTTOM SHEET DRAWER (P2 UX ENHANCEMENT) */
@@ -1546,7 +1682,7 @@
         <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
           <div class="basemap-toggle-wrap" title="Toggle Mapbox city streets context, choose style and adjust opacity">
             <label style="display: flex; align-items: center; gap: 4px; cursor: pointer; user-select: none;">
-              <input type="checkbox" id="chkBasemap" checked onchange="toggleBasemap(this.checked)" style="cursor: pointer;">
+              <input type="checkbox" id="chkBasemap" checked onchange="toggleBasemap(this.checked)" style="cursor: pointer; accent-color: #111111;">
               <span>Streetmap</span>
             </label>
             <select id="basemapStyleSelect" onchange="changeBasemapStyle(this.value)" style="border: 1px solid #D6CEBE; border-radius: 3px; font-size: 0.72rem; padding: 2px 4px; background: #FFFFFF; font-family: inherit; font-weight: 600; color: #333; cursor: pointer;">
@@ -1554,13 +1690,13 @@
               <option value="light-v11">Light Minimal</option>
               <option value="outdoors-v12">Outdoors / Terrain</option>
             </select>
-            <input type="range" id="basemapOpacity" min="0.1" max="1.0" step="0.05" value="0.60" oninput="setBasemapOpacity(this.value)" title="Basemap Opacity">
+            <input type="range" id="basemapOpacity" min="0.1" max="1.0" step="0.05" value="0.60" oninput="setBasemapOpacity(this.value)" title="Basemap Opacity" style="accent-color: #111111;">
             <span id="opacityValBadge" style="font-size: 0.70rem; color: #555; font-weight: 700; min-width: 26px;">60%</span>
           </div>
 
           <div class="labels-toggle-wrap" title="Toggle village names on hex cells (Auto-appears when zooming in)">
             <label style="display: flex; align-items: center; gap: 5px; cursor: pointer; user-select: none;">
-              <input type="checkbox" id="chkHexLabels" onchange="toggleHexLabels(this.checked)" style="cursor: pointer;">
+              <input type="checkbox" id="chkHexLabels" onchange="toggleHexLabels(this.checked)" style="cursor: pointer; accent-color: #111111;">
               <span style="display:inline-flex; align-items:center; gap:4px;">
                 <svg class="dw-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><circle cx="7" cy="7" r="1" fill="currentColor"/></svg>
                 Labels
