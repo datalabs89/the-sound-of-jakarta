@@ -1028,11 +1028,17 @@
     }
 
     /* PERIMETER CITY LABELS (JAKARTA 5 CITIES) */
+    .custom-perimeter-icon {
+      background: transparent !important;
+      border: none !important;
+      overflow: visible !important;
+    }
+
     .city-perimeter-label {
       background: rgba(255, 255, 255, 0.96);
       border: 1.5px solid #111111;
       border-radius: 3px;
-      padding: 5px 11px;
+      padding: 5px 12px;
       box-shadow: 0 3px 10px rgba(0,0,0,0.12);
       white-space: nowrap;
       pointer-events: auto;
@@ -1040,9 +1046,13 @@
       transition: all 0.15s ease;
       display: flex;
       align-items: center;
-      gap: 7px;
+      justify-content: center;
+      gap: 8px;
       position: relative;
       z-index: 700;
+      box-sizing: border-box;
+      width: 100%;
+      height: 100%;
     }
 
     .city-perimeter-label:hover {
@@ -1058,15 +1068,8 @@
       letter-spacing: 0.06em;
       text-transform: uppercase;
       color: #111111;
-    }
-
-    .city-perimeter-label .c-badge {
-      font-size: 0.74rem;
-      font-weight: 700;
-      color: #333333;
-      background: #ECE7DE;
-      padding: 2px 6px;
-      border-radius: 2px;
+      text-align: center;
+      line-height: 1;
     }
 
     .city-perimeter-label .c-line {
@@ -1074,6 +1077,7 @@
       height: 7px;
       border-radius: 50%;
       display: inline-block;
+      flex-shrink: 0;
     }
 
     /* INSTANT HOVER TOOLTIP */
@@ -2106,40 +2110,47 @@
         kota: "JAKARTA UTARA",
         color: "#486E8D",
         lat: -6.0380,
-        lng: 106.8555
+        lng: 106.8555,
+        width: 152
       },
       {
         name: "West Jakarta",
         kota: "JAKARTA BARAT",
         color: "#486E8D",
         lat: -6.1428,
-        lng: 106.6200
+        lng: 106.6200,
+        width: 144
       },
       {
         name: "Central Jakarta",
         kota: "JAKARTA PUSAT",
         color: "#AF4D64",
         lat: -6.0964,
-        lng: 106.8421
+        lng: 106.8421,
+        width: 174
       },
       {
         name: "East Jakarta",
         kota: "JAKARTA TIMUR",
         color: "#AF4D64",
         lat: -6.1600,
-        lng: 107.0520
+        lng: 107.0520,
+        width: 144
       },
       {
         name: "South Jakarta",
         kota: "JAKARTA SELATAN",
         color: "#AF4D64",
         lat: -6.3120,
-        lng: 106.8120
+        lng: 106.8120,
+        width: 152
       }
     ];
 
     const perimeterMarkers = [];
     perimeterCityLabels.forEach(c => {
+      const w = c.width || 150;
+      const h = 28;
       const customIcon = L.divIcon({
         className: 'custom-perimeter-icon',
         html: `
@@ -2148,8 +2159,8 @@
             <span class="c-name">${c.name}</span>
           </div>
         `,
-        iconSize: [140, 26],
-        iconAnchor: [70, 13]
+        iconSize: [w, h],
+        iconAnchor: [Math.round(w / 2), Math.round(h / 2)]
       });
 
       const m = L.marker([c.lat, c.lng], { icon: customIcon, interactive: true }).addTo(map);
