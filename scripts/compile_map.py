@@ -689,6 +689,15 @@ html_content = f'''<!DOCTYPE html>
       gap: 2px;
       transition: all 0.15s ease;
       white-space: nowrap;
+      filter: grayscale(100%) !important;
+      -webkit-filter: grayscale(100%) !important;
+    }}
+
+    .ex-arrow-icon {{
+      color: currentColor !important;
+      filter: grayscale(100%) !important;
+      -webkit-filter: grayscale(100%) !important;
+      flex-shrink: 0;
     }}
 
     .extreme-card:hover .ex-hint {{
@@ -1725,7 +1734,7 @@ html_content = f'''<!DOCTYPE html>
               <svg class="color-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--c-close)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-1px;"><circle cx="12" cy="12" r="10" fill="var(--c-close)" fill-opacity="0.25"/><line x1="22" y1="12" x2="18" y2="12"/><line x1="6" y1="12" x2="2" y2="12"/><line x1="12" y1="6" x2="12" y2="2"/><line x1="12" y1="22" x2="12" y2="18"/><circle cx="12" cy="12" r="3" fill="var(--c-close)"/></svg>
               Closest Margin
             </span>
-            <span class="ex-hint">Locate ↗</span>
+            <span class="ex-hint">Locate <svg class="ex-arrow-icon" width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:0px; margin-left:2px;"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg></span>
           </div>
           <div class="ex-val">Pal Meriam (East Jkt)</div>
           <div class="ex-sub">0.01% diff &middot; Margin of 1 ballot</div>
@@ -1737,7 +1746,7 @@ html_content = f'''<!DOCTYPE html>
               <svg class="color-icon" width="10" height="10" viewBox="0 0 24 24" fill="var(--c-anies)"><circle cx="12" cy="12" r="10"/></svg>
               Strongest 01 Bastion
             </span>
-            <span class="ex-hint">Locate ↗</span>
+            <span class="ex-hint">Locate <svg class="ex-arrow-icon" width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:0px; margin-left:2px;"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg></span>
           </div>
           <div class="ex-val">Sukabumi Utara (West Jkt)</div>
           <div class="ex-sub">Anies: 65.5% &middot; Margin +39.3%</div>
@@ -1749,7 +1758,7 @@ html_content = f'''<!DOCTYPE html>
               <svg class="color-icon" width="10" height="10" viewBox="0 0 24 24" fill="var(--c-prabowo)"><circle cx="12" cy="12" r="10"/></svg>
               Strongest 02 Stronghold
             </span>
-            <span class="ex-hint">Locate ↗</span>
+            <span class="ex-hint">Locate <svg class="ex-arrow-icon" width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:0px; margin-left:2px;"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg></span>
           </div>
           <div class="ex-val">Kapuk (West Jkt)</div>
           <div class="ex-sub">Prabowo: 56.5% &middot; Margin +31.5%</div>
@@ -2939,6 +2948,15 @@ html_content = f'''<!DOCTYPE html>
             const isLblChecked = chkLbl && chkLbl.checked;
             labelsWrap.innerHTML = `<span style="font-size:0.75rem; font-weight:700; color:#333;">Labels: ${{isLblChecked ? 'On' : 'Off'}}</span>`;
           }}
+
+          // Ensure all extreme card hint badges and arrows are pure grayscale in export
+          clonedDoc.querySelectorAll('.ex-hint, .ex-arrow-icon').forEach(el => {{
+            el.style.filter = 'grayscale(100%)';
+            el.style.webkitFilter = 'grayscale(100%)';
+            el.style.color = '#555555';
+            el.style.borderColor = '#D6CEBE';
+            el.style.backgroundColor = '#ECE7DE';
+          }});
 
           // 2. Ensure all cloned tiles are also pure grayscale
           convertTilesToGrayscale(clonedDoc);
