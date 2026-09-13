@@ -501,14 +501,27 @@
       box-shadow: 0 0 0 2px rgba(0,0,0,0.08);
     }
 
+    .dw-icon {
+      display: inline-block;
+      vertical-align: middle;
+      filter: grayscale(100%) !important;
+      -webkit-filter: grayscale(100%) !important;
+      color: currentColor;
+      flex-shrink: 0;
+    }
+
     .search-icon {
       position: absolute;
       left: 11px;
       top: 50%;
       transform: translateY(-50%);
-      color: #777;
+      color: #666666;
       pointer-events: none;
-      font-size: 0.90rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      filter: grayscale(100%) !important;
+      -webkit-filter: grayscale(100%) !important;
     }
 
     .search-clear-btn {
@@ -1099,6 +1112,16 @@
       filter: grayscale(100%) opacity(1.0);
     }
 
+    /* STRICT PUBLICATION GRAYSCALE FOR ALL ICONS & SVGS */
+    .dw-icon,
+    .search-icon,
+    .search-icon svg,
+    .export-btn svg,
+    .brand-logo-datalabs {
+      filter: grayscale(100%) !important;
+      -webkit-filter: grayscale(100%) !important;
+    }
+
     /* =========================================================================
        COMPREHENSIVE MULTI-DEVICE RESPONSIVE BREAKPOINTS (MOBILE / TABLET / DESKTOP)
        ========================================================================= */
@@ -1401,11 +1424,11 @@
       <!-- DEDICATED STORYLINE STRIP -->
       <div class="storyline-strip">
         <div class="story-card prabowo">
-          <strong>⚓ Northern Ports & Western Belt:</strong>
+          <strong><svg class="dw-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-2px; margin-right:4px;"><circle cx="12" cy="5" r="3"/><line x1="12" y1="22" x2="12" y2="8"/><path d="M5 12H2a10 10 0 0 0 20 0h-3"/></svg>Northern Ports & Western Belt:</strong>
           Prabowo-Gibran established decisive commanding leads across coastal industrial ports and western commercial urban villages.
         </div>
         <div class="story-card anies">
-          <strong>🏘️ Eastern & Southern Residential Bastion:</strong>
+          <strong><svg class="dw-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-2px; margin-right:4px;"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Eastern & Southern Residential Bastion:</strong>
           Anies-Muhaimin captured substantial momentum across high-density residential belts in East and South Jakarta.
         </div>
       </div>
@@ -1414,7 +1437,10 @@
       <div class="extremes-strip">
         <div class="extreme-card" onclick="focusKelurahan('PAL MERIAM')" title="Click to locate Pal Meriam on map">
           <div class="ex-label">
-            <span>⚔️ Closest Margin</span>
+            <span style="display:inline-flex; align-items:center; gap:4px;">
+              <svg class="dw-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="22" y1="12" x2="18" y2="12"/><line x1="6" y1="12" x2="2" y2="12"/><line x1="12" y1="6" x2="12" y2="2"/><line x1="12" y1="22" x2="12" y2="18"/></svg>
+              Closest Margin
+            </span>
             <span class="ex-hint">Locate ↗</span>
           </div>
           <div class="ex-val">Pal Meriam (East Jkt)</div>
@@ -1423,7 +1449,10 @@
 
         <div class="extreme-card" onclick="focusKelurahan('SUKABUMI UTARA')" title="Click to locate Sukabumi Utara on map">
           <div class="ex-label">
-            <span>🔴 Strongest 01 Bastion</span>
+            <span style="display:inline-flex; align-items:center; gap:4px;">
+              <svg class="dw-icon" width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="10"/></svg>
+              Strongest 01 Bastion
+            </span>
             <span class="ex-hint">Locate ↗</span>
           </div>
           <div class="ex-val">Sukabumi Utara (West Jkt)</div>
@@ -1432,7 +1461,10 @@
 
         <div class="extreme-card" onclick="focusKelurahan('KAPUK')" title="Click to locate Kapuk on map">
           <div class="ex-label">
-            <span>🔵 Strongest 02 Stronghold</span>
+            <span style="display:inline-flex; align-items:center; gap:4px;">
+              <svg class="dw-icon" width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="10"/></svg>
+              Strongest 02 Stronghold
+            </span>
             <span class="ex-hint">Locate ↗</span>
           </div>
           <div class="ex-val">Kapuk (West Jkt)</div>
@@ -1467,12 +1499,17 @@
           <div class="labels-toggle-wrap" title="Toggle village names on hex cells (Auto-appears when zooming in)">
             <label style="display: flex; align-items: center; gap: 5px; cursor: pointer; user-select: none;">
               <input type="checkbox" id="chkHexLabels" onchange="toggleHexLabels(this.checked)" style="cursor: pointer;">
-              <span>🏷️ Labels</span>
+              <span style="display:inline-flex; align-items:center; gap:4px;">
+                <svg class="dw-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><circle cx="7" cy="7" r="1" fill="currentColor"/></svg>
+                Labels
+              </span>
             </label>
           </div>
 
           <div class="search-box-wrap">
-            <span class="search-icon">🔍</span>
+            <span class="search-icon">
+              <svg class="dw-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16" y2="16"/></svg>
+            </span>
             <input type="text" id="kelSearchInput" class="search-input" placeholder="Search urban village (e.g. Menteng)..." oninput="handleSearchInput(this.value)" onfocus="handleSearchInput(this.value)" onkeydown="handleSearchKeydown(event)" autocomplete="off">
             <button id="searchClearBtn" class="search-clear-btn" onclick="clearSearch()" title="Clear search (Esc)">✕</button>
             <div id="searchDropdown" class="search-dropdown"></div>
@@ -2605,9 +2642,9 @@
             const styleName = styleSelect ? styleSelect.options[styleSelect.selectedIndex].text : 'City Streets';
             const isChecked = document.getElementById('chkBasemap').checked;
             if (isChecked) {
-              basemapWrap.innerHTML = `<span style="font-size:0.75rem; font-weight:700; color:#333;">🗺️ Basemap: ${styleName} (${Math.round(parseFloat(opacity)*100)}% Opacity)</span>`;
+              basemapWrap.innerHTML = `<span style="font-size:0.75rem; font-weight:700; color:#333;">Basemap: ${styleName} (${Math.round(parseFloat(opacity)*100)}% Opacity)</span>`;
             } else {
-              basemapWrap.innerHTML = `<span style="font-size:0.75rem; font-weight:700; color:#666;">🗺️ Basemap: Off</span>`;
+              basemapWrap.innerHTML = `<span style="font-size:0.75rem; font-weight:700; color:#666;">Basemap: Off</span>`;
             }
           }
 
@@ -2616,7 +2653,7 @@
           if (labelsWrap) {
             const chkLbl = document.getElementById('chkHexLabels');
             const isLblChecked = chkLbl && chkLbl.checked;
-            labelsWrap.innerHTML = `<span style="font-size:0.75rem; font-weight:700; color:#333;">🏷️ Labels: ${isLblChecked ? 'On' : 'Off'}</span>`;
+            labelsWrap.innerHTML = `<span style="font-size:0.75rem; font-weight:700; color:#333;">Labels: ${isLblChecked ? 'On' : 'Off'}</span>`;
           }
 
           // 2. Ensure all cloned tiles are also pure grayscale
