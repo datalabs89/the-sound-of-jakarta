@@ -755,14 +755,32 @@
     }
 
     .drawer-sub {
-      font-size: 0.82rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 6px 10px;
+      line-height: 1.30;
+    }
+
+    .drawer-sub .tt-geo {
+      font-size: clamp(0.76rem, 2.2vw, 0.84rem);
       color: #555555;
-      line-height: 1.35;
+      flex: 1;
+      min-width: 130px;
     }
 
     .drawer-sub .tt-margin {
-      color: #111111;
+      font-size: clamp(0.72rem, 2vw, 0.78rem);
       font-weight: 700;
+      font-variant-numeric: tabular-nums;
+      white-space: nowrap;
+      color: #111111;
+      background: #F2ECE1;
+      padding: 2px 8px;
+      border-radius: 3px;
+      border: 1px solid #E2D9C8;
+      display: inline-block;
     }
 
     .drawer-close-btn {
@@ -881,17 +899,35 @@
     }
 
     .dw-tt-sub {
-      font-size: 0.80rem;
-      color: #555555;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 4px 8px;
       border-bottom: 1px solid #ECE7DE;
       padding-bottom: 6px;
       margin-bottom: 9px;
-      line-height: 1.35;
+      line-height: 1.30;
+    }
+
+    .dw-tt-sub .tt-geo {
+      font-size: clamp(0.72rem, 1.8vw, 0.78rem);
+      color: #555555;
+      flex: 1;
+      min-width: 120px;
     }
 
     .dw-tt-sub .tt-margin {
-      color: #111111;
+      font-size: clamp(0.70rem, 1.8vw, 0.76rem);
       font-weight: 700;
+      font-variant-numeric: tabular-nums;
+      white-space: nowrap;
+      color: #111111;
+      background: #F2ECE1;
+      padding: 2px 7px;
+      border-radius: 3px;
+      border: 1px solid #E2D9C8;
+      display: inline-block;
     }
 
     .dw-tt-row {
@@ -1165,6 +1201,10 @@
       .dw-tt-title {
         font-size: 0.95rem;
       }
+      .dw-tt-sub .tt-margin {
+        font-size: 0.68rem;
+        padding: 1px 5px;
+      }
       #mapViewport {
         height: 400px;
       }
@@ -1419,7 +1459,7 @@
     <div class="drawer-header">
       <div class="drawer-title-box">
         <h3 id="drawerTitle" class="drawer-title">Urban Village</h3>
-        <div id="drawerSub" class="drawer-sub"><span class="tt-geo">Kecamatan, Kota</span> &middot; <span class="tt-margin">Margin</span></div>
+        <div id="drawerSub" class="drawer-sub"><span class="tt-geo">Kecamatan, Kota</span><span class="tt-margin">Margin</span></div>
       </div>
       <button class="drawer-close-btn" onclick="closeMobileDrawer()" aria-label="Close drawer">✕</button>
     </div>
@@ -1547,7 +1587,7 @@
         
         const tooltipContent = `
           <div class="dw-tt-title">${p.kelurahan}</div>
-          <div class="dw-tt-sub"><span class="tt-geo">${p.kecamatan}, ${p.kota}</span> &middot; <span class="tt-margin">${p.margin_str}</span></div>
+          <div class="dw-tt-sub"><span class="tt-geo">${p.kecamatan}, ${p.kota}</span><span class="tt-margin">${p.margin_str}</span></div>
           
           <div class="dw-tt-row ${p1Bold}">
             <span class="c-cand-name">01 Anies - Muhaimin</span>
@@ -2257,7 +2297,7 @@
       let p3Bold = (p.pct_ganjar >= p.pct_anies && p.pct_ganjar >= p.pct_prabowo) ? "lead" : "";
 
       document.getElementById('drawerTitle').innerText = p.kelurahan;
-      document.getElementById('drawerSub').innerHTML = `<span class="tt-geo">${p.kecamatan}, ${p.kota}</span> &middot; <span class="tt-margin">${p.margin_str}</span>`;
+      document.getElementById('drawerSub').innerHTML = `<span class="tt-geo">${p.kecamatan}, ${p.kota}</span><span class="tt-margin">${p.margin_str}</span>`;
 
       document.getElementById('drawerBody').innerHTML = `
         <div class="dw-tt-row ${p1Bold}">
