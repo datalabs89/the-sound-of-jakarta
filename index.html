@@ -735,23 +735,25 @@
       display: flex;
       justify-content: space-between;
       align-items: flex-start;
-      margin-bottom: 12px;
-      padding-bottom: 8px;
+      margin-bottom: clamp(8px, 1.5vw, 12px);
+      padding-bottom: clamp(6px, 1.2vw, 8px);
       border-bottom: 1px solid #ECE7DE;
       gap: 10px;
     }
 
     .drawer-title-box {
-      flex: 1;
+      flex: 1 1 auto;
+      min-width: 0;
     }
 
     .drawer-title {
       font-family: 'Libre Baskerville', Georgia, serif;
-      font-size: 1.15rem;
+      font-size: clamp(1.05rem, 3.8vw, 1.25rem);
       font-weight: 700;
       color: #111111;
       margin-bottom: 2px;
-      line-height: 1.25;
+      line-height: 1.22;
+      overflow-wrap: break-word;
     }
 
     .drawer-sub {
@@ -759,28 +761,31 @@
       justify-content: space-between;
       align-items: center;
       flex-wrap: wrap;
-      gap: 6px 10px;
+      gap: 4px 8px;
       line-height: 1.30;
     }
 
     .drawer-sub .tt-geo {
-      font-size: clamp(0.76rem, 2.2vw, 0.84rem);
+      font-size: clamp(0.72rem, 2.2vw, 0.80rem);
       color: #555555;
-      flex: 1;
-      min-width: 130px;
+      font-weight: 500;
+      flex: 1 1 auto;
+      min-width: 110px;
     }
 
     .drawer-sub .tt-margin {
-      font-size: clamp(0.72rem, 2vw, 0.78rem);
+      font-size: clamp(0.68rem, 2vw, 0.76rem);
       font-weight: 700;
       font-variant-numeric: tabular-nums;
       white-space: nowrap;
       color: #111111;
       background: #F2ECE1;
-      padding: 2px 8px;
+      padding: 2px 7px;
       border-radius: 3px;
       border: 1px solid #E2D9C8;
       display: inline-block;
+      flex-shrink: 0;
+      margin-left: auto;
     }
 
     .drawer-close-btn {
@@ -867,16 +872,18 @@
 
     .leaflet-tooltip.dw-custom-tooltip {
       background: #FFFFFF !important;
-      border-radius: 3px !important;
+      border-radius: 4px !important;
       border: 1px solid #C4BCAC !important;
-      box-shadow: 0 8px 30px rgba(0,0,0,0.18) !important;
-      padding: 14px 18px !important;
+      box-shadow: 0 8px 28px rgba(0,0,0,0.16) !important;
+      padding: clamp(10px, 1.4vw, 15px) clamp(12px, 1.8vw, 18px) !important;
       font-family: 'IBM Plex Sans', -apple-system, sans-serif !important;
-      font-size: 0.85rem !important;
-      color: #111 !important;
+      font-size: clamp(0.78rem, 1vw, 0.85rem) !important;
+      color: #111111 !important;
       opacity: 1 !important;
-      min-width: 280px !important;
-      max-width: 320px !important;
+      width: clamp(240px, 24vw, 315px) !important;
+      max-width: calc(100vw - 32px) !important;
+      box-sizing: border-box !important;
+      white-space: normal !important;
       z-index: 1000 !important;
       pointer-events: none !important;
     }
@@ -884,18 +891,25 @@
     .leaflet-tooltip-top:before, 
     .leaflet-tooltip-bottom:before, 
     .leaflet-tooltip-left:before, 
-    .leaflet-tooltip-right:before {
+    .leaflet-tooltip-right:before,
+    .leaflet-tooltip-top:after, 
+    .leaflet-tooltip-bottom:after, 
+    .leaflet-tooltip-left:after, 
+    .leaflet-tooltip-right:after {
       border: none !important;
+      display: none !important;
     }
 
     .dw-tt-title {
       font-family: 'Libre Baskerville', Georgia, serif;
-      font-size: 1.10rem;
+      font-size: clamp(0.95rem, 1.25vw, 1.12rem);
       font-weight: 700;
-      color: #111;
-      margin-bottom: 3px;
-      line-height: 1.25;
+      color: #111111;
+      margin-bottom: clamp(2px, 0.35vw, 4px);
+      line-height: 1.22;
       letter-spacing: -0.01em;
+      word-break: normal;
+      overflow-wrap: break-word;
     }
 
     .dw-tt-sub {
@@ -905,37 +919,44 @@
       flex-wrap: wrap;
       gap: 4px 8px;
       border-bottom: 1px solid #ECE7DE;
-      padding-bottom: 6px;
-      margin-bottom: 9px;
+      padding-bottom: clamp(4px, 0.6vw, 6px);
+      margin-bottom: clamp(6px, 0.9vw, 9px);
       line-height: 1.30;
     }
 
     .dw-tt-sub .tt-geo {
-      font-size: clamp(0.72rem, 1.8vw, 0.78rem);
+      font-size: clamp(0.70rem, 0.95vw, 0.77rem);
       color: #555555;
-      flex: 1;
-      min-width: 120px;
+      font-weight: 500;
+      flex: 1 1 auto;
+      min-width: 110px;
+      letter-spacing: 0.01em;
     }
 
     .dw-tt-sub .tt-margin {
-      font-size: clamp(0.70rem, 1.8vw, 0.76rem);
+      font-size: clamp(0.67rem, 0.90vw, 0.74rem);
       font-weight: 700;
       font-variant-numeric: tabular-nums;
       white-space: nowrap;
       color: #111111;
       background: #F2ECE1;
-      padding: 2px 7px;
+      padding: 1.5px 6px;
       border-radius: 3px;
       border: 1px solid #E2D9C8;
       display: inline-block;
+      flex-shrink: 0;
+      margin-left: auto;
+      letter-spacing: 0.01em;
     }
 
     .dw-tt-row {
       display: flex;
       justify-content: space-between;
-      align-items: center;
-      margin-bottom: 4px;
-      font-size: 0.85rem;
+      align-items: baseline;
+      gap: 6px;
+      margin-bottom: clamp(3px, 0.5vw, 4px);
+      font-size: clamp(0.78rem, 1vw, 0.84rem);
+      line-height: 1.25;
     }
 
     .dw-tt-row.lead {
@@ -943,53 +964,91 @@
       color: #000000;
     }
 
+    .dw-tt-row .c-cand-name {
+      flex: 1 1 auto;
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      font-weight: 500;
+      color: #222222;
+      letter-spacing: -0.01em;
+    }
+
+    .dw-tt-row.lead .c-cand-name {
+      font-weight: 700;
+      color: #000000;
+    }
+
     .dw-tt-row .c-cand-val {
+      flex-shrink: 0;
       font-variant-numeric: tabular-nums;
       text-align: right;
       white-space: nowrap;
+      font-size: clamp(0.77rem, 0.98vw, 0.83rem);
+    }
+
+    .dw-tt-row .c-cand-val b {
+      font-weight: 700;
     }
 
     .dw-tt-row .c-cand-votes {
-      font-size: 0.78rem;
+      font-size: clamp(0.67rem, 0.85vw, 0.74rem);
       color: #666666;
       font-weight: 500;
       margin-left: 3px;
+      font-variant-numeric: tabular-nums;
     }
 
     .dw-tt-row.lead .c-cand-votes {
-      color: #444444;
+      color: #333333;
+      font-weight: 600;
     }
 
     .dw-tt-bar-wrap {
       background: #EEE9DF;
-      height: 6px;
+      height: clamp(5px, 0.7vw, 6px);
       border-radius: 3px;
       overflow: hidden;
-      margin-bottom: 7px;
+      margin-bottom: clamp(6px, 0.9vw, 8px);
     }
 
     .dw-tt-bar-fill {
       height: 100%;
       border-radius: 3px;
+      transition: width 0.15s ease-out;
     }
 
     .dw-tt-total {
-      border-top: 1px dashed #DDD;
-      margin-top: 8px;
-      padding-top: 6px;
-      font-size: 0.78rem;
+      border-top: 1px dashed #D6CEBE;
+      margin-top: clamp(6px, 0.9vw, 8px);
+      padding-top: clamp(5px, 0.7vw, 7px);
+      font-size: clamp(0.68rem, 0.88vw, 0.75rem);
       color: #666666;
       display: flex;
       justify-content: space-between;
-      align-items: center;
+      align-items: baseline;
       letter-spacing: 0.02em;
+      text-transform: uppercase;
+      font-weight: 600;
+    }
+
+    .dw-tt-total span:first-child {
+      flex: 1 1 auto;
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
 
     .dw-tt-total span:last-child {
-      font-size: 0.84rem;
+      flex-shrink: 0;
+      font-size: clamp(0.76rem, 1vw, 0.83rem);
       font-weight: 700;
       color: #111111;
       font-variant-numeric: tabular-nums;
+      margin-left: 8px;
+      text-transform: none;
     }
 
     /* FOOTER */
@@ -1171,11 +1230,8 @@
         padding: 1px 4px;
       }
       .leaflet-tooltip.dw-custom-tooltip {
-        min-width: 250px !important;
-        padding: 12px 14px !important;
-      }
-      .dw-tt-title {
-        font-size: 1.02rem;
+        width: clamp(230px, 75vw, 290px) !important;
+        padding: 11px 13px !important;
       }
       .dw-footer {
         flex-direction: column-reverse;
@@ -1195,15 +1251,8 @@
         grid-template-columns: 1fr 1fr;
       }
       .leaflet-tooltip.dw-custom-tooltip {
-        min-width: 225px !important;
-        padding: 10px 12px !important;
-      }
-      .dw-tt-title {
-        font-size: 0.95rem;
-      }
-      .dw-tt-sub .tt-margin {
-        font-size: 0.68rem;
-        padding: 1px 5px;
+        width: clamp(210px, 86vw, 265px) !important;
+        padding: 9px 11px !important;
       }
       #mapViewport {
         height: 400px;
