@@ -1353,6 +1353,15 @@ html_content = f'''<!DOCTYPE html>
       -webkit-filter: grayscale(100%) !important;
     }}
 
+    /* ELECTORAL CATEGORY ACCENT ICONS (EXEMPT FROM GRAYSCALE) */
+    .color-icon {{
+      display: inline-block;
+      vertical-align: middle;
+      flex-shrink: 0;
+      filter: none !important;
+      -webkit-filter: none !important;
+    }}
+
     /* =========================================================================
        COMPREHENSIVE MULTI-DEVICE RESPONSIVE BREAKPOINTS (MOBILE / TABLET / DESKTOP)
        ========================================================================= */
@@ -1668,8 +1677,8 @@ html_content = f'''<!DOCTYPE html>
       <div class="extremes-strip">
         <div class="extreme-card" onclick="focusKelurahan('PAL MERIAM')" title="Click to locate Pal Meriam on map">
           <div class="ex-label">
-            <span style="display:inline-flex; align-items:center; gap:4px;">
-              <svg class="dw-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="22" y1="12" x2="18" y2="12"/><line x1="6" y1="12" x2="2" y2="12"/><line x1="12" y1="6" x2="12" y2="2"/><line x1="12" y1="22" x2="12" y2="18"/></svg>
+            <span style="display:inline-flex; align-items:center; gap:5px;">
+              <svg class="color-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--c-close)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-1px;"><circle cx="12" cy="12" r="10" fill="var(--c-close)" fill-opacity="0.25"/><line x1="22" y1="12" x2="18" y2="12"/><line x1="6" y1="12" x2="2" y2="12"/><line x1="12" y1="6" x2="12" y2="2"/><line x1="12" y1="22" x2="12" y2="18"/><circle cx="12" cy="12" r="3" fill="var(--c-close)"/></svg>
               Closest Margin
             </span>
             <span class="ex-hint">Locate ↗</span>
@@ -1680,8 +1689,8 @@ html_content = f'''<!DOCTYPE html>
 
         <div class="extreme-card" onclick="focusKelurahan('SUKABUMI UTARA')" title="Click to locate Sukabumi Utara on map">
           <div class="ex-label">
-            <span style="display:inline-flex; align-items:center; gap:4px;">
-              <svg class="dw-icon" width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="10"/></svg>
+            <span style="display:inline-flex; align-items:center; gap:5px;">
+              <svg class="color-icon" width="10" height="10" viewBox="0 0 24 24" fill="var(--c-anies)"><circle cx="12" cy="12" r="10"/></svg>
               Strongest 01 Bastion
             </span>
             <span class="ex-hint">Locate ↗</span>
@@ -1692,8 +1701,8 @@ html_content = f'''<!DOCTYPE html>
 
         <div class="extreme-card" onclick="focusKelurahan('KAPUK')" title="Click to locate Kapuk on map">
           <div class="ex-label">
-            <span style="display:inline-flex; align-items:center; gap:4px;">
-              <svg class="dw-icon" width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="10"/></svg>
+            <span style="display:inline-flex; align-items:center; gap:5px;">
+              <svg class="color-icon" width="10" height="10" viewBox="0 0 24 24" fill="var(--c-prabowo)"><circle cx="12" cy="12" r="10"/></svg>
               Strongest 02 Stronghold
             </span>
             <span class="ex-hint">Locate ↗</span>
