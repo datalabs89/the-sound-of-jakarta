@@ -2337,7 +2337,7 @@ html_content = f'''<!DOCTYPE html>
         kota: "JAKARTA UTARA",
         color: "#486E8D",
         lat: -6.0380,
-        lng: 106.8555,
+        lng: 106.9150,
         width: 152
       }},
       {{
@@ -2352,7 +2352,7 @@ html_content = f'''<!DOCTYPE html>
         name: "Central Jakarta",
         kota: "JAKARTA PUSAT",
         color: "#AF4D64",
-        lat: -6.0964,
+        lat: -6.0120,
         lng: 106.8421,
         width: 174
       }},
@@ -2374,6 +2374,29 @@ html_content = f'''<!DOCTYPE html>
       }}
     ];
 
+    // Editorial Callout Leader Line & Anchor Dot for Central Jakarta Enclave
+    const centralCalloutLine = L.polyline([
+      [-6.0260, 106.8421],
+      [-6.0964, 106.8421]
+    ], {{
+      color: '#111111',
+      weight: 1.5,
+      dashArray: '3, 4',
+      opacity: 0.75,
+      pane: 'cityBordersPane',
+      interactive: false
+    }}).addTo(map);
+
+    const centralCalloutDot = L.circleMarker([-6.0964, 106.8421], {{
+      radius: 3.5,
+      color: '#111111',
+      weight: 1.5,
+      fillColor: '#AF4D64',
+      fillOpacity: 1,
+      pane: 'cityBordersPane',
+      interactive: false
+    }}).addTo(map);
+
     const perimeterMarkers = [];
     perimeterCityLabels.forEach(c => {{
       const w = c.width || 150;
@@ -2391,11 +2414,23 @@ html_content = f'''<!DOCTYPE html>
       }});
 
       const m = L.marker([c.lat, c.lng], {{ icon: customIcon, interactive: true }}).addTo(map);
+
+      if (c.kota === 'JAKARTA PUSAT') {{
+        m.on('mouseover', () => {{
+          centralCalloutLine.setStyle({{ weight: 2.2, opacity: 1 }});
+          centralCalloutDot.setStyle({{ radius: 4.5 }});
+        }});
+        m.on('mouseout', () => {{
+          centralCalloutLine.setStyle({{ weight: 1.5, opacity: selectedCity && selectedCity !== 'JAKARTA PUSAT' ? 0.20 : 0.75 }});
+          centralCalloutDot.setStyle({{ radius: 3.5 }});
+        }});
+      }}
+
       perimeterMarkers.push(m);
     }});
 
-    // Combined Feature Group of all map elements (Hexagons + Perimeter badges)
-    const allMapElementsGroup = L.featureGroup([geojsonLayer, ...perimeterMarkers]);
+    // Combined Feature Group of all map elements (Hexagons + Perimeter badges + Callout)
+    const allMapElementsGroup = L.featureGroup([geojsonLayer, ...perimeterMarkers, centralCalloutLine, centralCalloutDot]);
 
     // Symmetrical Absolute Mathematical Center of 261 Mainland Kelurahan & City Badges
     const JAKARTA_CENTER_LAT = -6.1756;
@@ -2644,6 +2679,17 @@ html_content = f'''<!DOCTYPE html>
             el.style.opacity = '0.20';
           }}
         }});
+      }}
+
+      // Dim or restore Central Jakarta callout leader line & dot
+      if (typeof centralCalloutLine !== 'undefined' && typeof centralCalloutDot !== 'undefined') {{
+        if (!cityName || cityName === 'JAKARTA PUSAT') {{
+          centralCalloutLine.setStyle({{ opacity: 0.75 }});
+          centralCalloutDot.setStyle({{ opacity: 1, fillOpacity: 1 }});
+        }} else {{
+          centralCalloutLine.setStyle({{ opacity: 0.20 }});
+          centralCalloutDot.setStyle({{ opacity: 0.20, fillOpacity: 0.20 }});
+        }}
       }}
 
       updateSpectrumBar(cityName);
