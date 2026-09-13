@@ -2332,7 +2332,7 @@ html_content = f'''<!DOCTYPE html>
         name: "North Jakarta",
         kota: "JAKARTA UTARA",
         color: "#486E8D",
-        lat: -6.0460,
+        lat: -6.0280,
         lng: 106.8555
       }},
       {{
@@ -2340,7 +2340,7 @@ html_content = f'''<!DOCTYPE html>
         kota: "JAKARTA BARAT",
         color: "#486E8D",
         lat: -6.1428,
-        lng: 106.6360
+        lng: 106.5900
       }},
       {{
         name: "Central Jakarta",
@@ -2353,14 +2353,14 @@ html_content = f'''<!DOCTYPE html>
         name: "East Jakarta",
         kota: "JAKARTA TIMUR",
         color: "#AF4D64",
-        lat: -6.1555,
-        lng: 107.0380
+        lat: -6.1600,
+        lng: 107.0750
       }},
       {{
         name: "South Jakarta",
         kota: "JAKARTA SELATAN",
         color: "#AF4D64",
-        lat: -6.2980,
+        lat: -6.3250,
         lng: 106.8120
       }}
     ];
