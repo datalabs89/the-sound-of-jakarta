@@ -111,17 +111,21 @@
     .export-btn {
       display: inline-flex;
       align-items: center;
+      justify-content: center;
       gap: 6px;
-      padding: 6px 13px;
+      padding: 6px 14px;
       background: #FFFFFF;
       border: 1.5px solid #111111;
       border-radius: 3px;
       font-size: 0.78rem;
       font-weight: 700;
-      color: #111;
+      color: #111111;
       cursor: pointer;
       transition: all 0.15s ease;
       font-family: inherit;
+      white-space: nowrap;
+      text-decoration: none;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.06);
     }
 
     .export-btn:hover {
@@ -129,6 +133,11 @@
       color: #FFFFFF;
       box-shadow: 0 3px 8px rgba(0,0,0,0.15);
       transform: translateY(-1px);
+    }
+
+    .export-btn:active {
+      transform: translateY(0);
+      box-shadow: 0 1px 2px rgba(0,0,0,0.1);
     }
 
     h1.dw-headline {
@@ -1115,15 +1124,29 @@
         border-radius: 2px;
       }
       .header-top-row {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 10px;
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 8px;
+      }
+      .badge-top {
+        font-size: clamp(0.60rem, 1.8vw, 0.70rem);
+        letter-spacing: 0.08em;
+        line-height: 1.25;
+        border-bottom-width: 1.5px;
+        padding-bottom: 2px;
       }
       .export-btn {
-        align-self: flex-start;
-        width: 100%;
-        text-align: center;
-        padding: 9px 12px;
+        width: auto !important;
+        max-width: fit-content !important;
+        align-self: center;
+        padding: 5px 12px;
+        font-size: 0.72rem;
+        gap: 5px;
+        white-space: nowrap;
+        flex-shrink: 0;
       }
       h1.dw-headline {
         font-size: clamp(1.65rem, 5.5vw, 2.25rem);
@@ -1244,6 +1267,18 @@
     }
 
     @media (max-width: 420px) {
+      .header-top-row {
+        gap: 6px;
+      }
+      .badge-top {
+        font-size: 0.58rem;
+        letter-spacing: 0.06em;
+      }
+      .export-btn {
+        padding: 4px 10px;
+        font-size: 0.69rem;
+        gap: 4px;
+      }
       .stats-bar {
         grid-template-columns: 1fr;
       }
@@ -1268,7 +1303,10 @@
     <div class="header-area">
       <div class="header-top-row">
         <div class="badge-top">Election Cartography &middot; Special Report</div>
-        <button class="export-btn" id="btnExport" onclick="exportPoster()">Download</button>
+        <button class="export-btn" id="btnExport" onclick="exportPoster()">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          <span id="btnExportText">Download</span>
+        </button>
       </div>
 
       <h1 class="dw-headline">The Voice of Jakarta</h1>
@@ -2515,7 +2553,13 @@
     // Bulletproof High-Res Poster Export with Pure Vector Rasterization & Exact Centering
     async function exportPoster() {
       const btn = document.getElementById('btnExport');
-      btn.innerText = '⏳ Rendering 4K Poster...';
+      const btnText = document.getElementById('btnExportText');
+      const isMobile = window.innerWidth <= 768;
+      if (btnText) {
+        btnText.innerText = isMobile ? 'Exporting...' : 'Rendering 4K...';
+      } else {
+        btn.innerText = isMobile ? '⏳ Exporting...' : '⏳ Rendering 4K...';
+      }
       btn.style.opacity = '0.7';
 
       const originalScrollY = window.scrollY;
@@ -2583,12 +2627,20 @@
         link.download = 'The_Voice_of_Jakarta_Election_Map_4K.png';
         link.href = canvas.toDataURL('image/png', 1.0);
         link.click();
-        btn.innerText = 'Download';
+        if (btnText) {
+          btnText.innerText = 'Download';
+        } else {
+          btn.innerText = 'Download';
+        }
         btn.style.opacity = '1';
         window.scrollTo(0, originalScrollY);
       }).catch(err => {
         console.error('Export error:', err);
-        btn.innerText = 'Download';
+        if (btnText) {
+          btnText.innerText = 'Download';
+        } else {
+          btn.innerText = 'Download';
+        }
         btn.style.opacity = '1';
         window.scrollTo(0, originalScrollY);
         alert('Export error, please try again.');
