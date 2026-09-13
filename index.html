@@ -1034,6 +1034,57 @@
       overflow: visible !important;
     }
 
+    .custom-perimeter-icon-central {
+      background: transparent !important;
+      border: none !important;
+      overflow: visible !important;
+    }
+
+    .central-marker-wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 174px;
+      pointer-events: none;
+      transition: opacity 0.2s ease;
+    }
+
+    .central-marker-wrapper .city-perimeter-label {
+      pointer-events: auto;
+      width: 174px;
+      height: 28px;
+    }
+
+    .central-callout-line-dom {
+      width: 0px;
+      border-left: 1.5px dashed #111111;
+      height: 106px;
+      opacity: 0.75;
+      transition: height 0.1s ease-out, opacity 0.15s ease;
+    }
+
+    .central-callout-dot-dom {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #AF4D64;
+      border: 1.5px solid #111111;
+      box-sizing: border-box;
+      flex-shrink: 0;
+      margin-left: -0.5px;
+      opacity: 1;
+      transition: opacity 0.15s ease, transform 0.15s ease;
+    }
+
+    .central-marker-wrapper:hover .central-callout-line-dom {
+      border-left-width: 2.2px;
+      opacity: 1;
+    }
+
+    .central-marker-wrapper:hover .central-callout-dot-dom {
+      transform: scale(1.35);
+    }
+
     .city-perimeter-label {
       background: rgba(255, 255, 255, 0.96);
       border: 1.5px solid #111111;
@@ -2147,33 +2198,33 @@
       }
     ];
 
-    // Editorial Callout Leader Line & Anchor Dot for Central Jakarta Enclave
-    const centralCalloutLine = L.polyline([
-      [-6.0260, 106.8421],
-      [-6.0964, 106.8421]
-    ], {
-      color: '#111111',
-      weight: 1.5,
-      dashArray: '3, 4',
-      opacity: 0.75,
-      pane: 'cityBordersPane',
-      interactive: false
-    }).addTo(map);
-
-    const centralCalloutDot = L.circleMarker([-6.0964, 106.8421], {
-      radius: 3.5,
-      color: '#111111',
-      weight: 1.5,
-      fillColor: '#AF4D64',
-      fillOpacity: 1,
-      pane: 'cityBordersPane',
-      interactive: false
-    }).addTo(map);
-
     const perimeterMarkers = [];
     perimeterCityLabels.forEach(c => {
       const w = c.width || 150;
       const h = 28;
+
+      if (c.kota === 'JAKARTA PUSAT') {
+        const centralIcon = L.divIcon({
+          className: 'custom-perimeter-icon-central',
+          html: `
+            <div class="central-marker-wrapper" id="centralMarkerWrap">
+              <div class="city-perimeter-label" onclick="filterCity('${c.kota}')">
+                <span class="c-line" style="background:${c.color}"></span>
+                <span class="c-name">${c.name}</span>
+              </div>
+              <div class="central-callout-line-dom" id="centralLineDom"></div>
+              <div class="central-callout-dot-dom" id="centralDotDom"></div>
+            </div>
+          `,
+          iconSize: [w, h],
+          iconAnchor: [Math.round(w / 2), Math.round(h / 2)]
+        });
+
+        const m = L.marker([c.lat, c.lng], { icon: centralIcon, interactive: true }).addTo(map);
+        perimeterMarkers.push(m);
+        return;
+      }
+
       const customIcon = L.divIcon({
         className: 'custom-perimeter-icon',
         html: `
@@ -2187,23 +2238,24 @@
       });
 
       const m = L.marker([c.lat, c.lng], { icon: customIcon, interactive: true }).addTo(map);
-
-      if (c.kota === 'JAKARTA PUSAT') {
-        m.on('mouseover', () => {
-          centralCalloutLine.setStyle({ weight: 2.2, opacity: 1 });
-          centralCalloutDot.setStyle({ radius: 4.5 });
-        });
-        m.on('mouseout', () => {
-          centralCalloutLine.setStyle({ weight: 1.5, opacity: selectedCity && selectedCity !== 'JAKARTA PUSAT' ? 0.20 : 0.75 });
-          centralCalloutDot.setStyle({ radius: 3.5 });
-        });
-      }
-
       perimeterMarkers.push(m);
     });
 
-    // Combined Feature Group of all map elements (Hexagons + Perimeter badges + Callout)
-    const allMapElementsGroup = L.featureGroup([geojsonLayer, ...perimeterMarkers, centralCalloutLine, centralCalloutDot]);
+    // Combined Feature Group of all map elements (Hexagons + Perimeter badges)
+    const allMapElementsGroup = L.featureGroup([geojsonLayer, ...perimeterMarkers]);
+
+    // Responsive Auto-Calibrated Height for Central Jakarta Leader Line
+    function updateCentralLineHeight() {
+      const line = document.getElementById('centralLineDom');
+      if (!line) return;
+      const pTop = map.latLngToLayerPoint([-6.0120, 106.8421]);
+      const pBottom = map.latLngToLayerPoint([-6.0964, 106.8421]);
+      const h = Math.max(10, Math.round((pBottom.y - pTop.y) - 17.5));
+      line.style.height = h + 'px';
+    }
+
+    map.on('zoomend', updateCentralLineHeight);
+    setTimeout(updateCentralLineHeight, 150);
 
     // Symmetrical Absolute Mathematical Center of 261 Mainland Kelurahan & City Badges
     const JAKARTA_CENTER_LAT = -6.1756;
@@ -2454,14 +2506,13 @@
         });
       }
 
-      // Dim or restore Central Jakarta callout leader line & dot
-      if (typeof centralCalloutLine !== 'undefined' && typeof centralCalloutDot !== 'undefined') {
+      // Dim or restore Central Jakarta unified marker (card + callout line + dot)
+      const centralWrap = document.getElementById('centralMarkerWrap');
+      if (centralWrap) {
         if (!cityName || cityName === 'JAKARTA PUSAT') {
-          centralCalloutLine.setStyle({ opacity: 0.75 });
-          centralCalloutDot.setStyle({ opacity: 1, fillOpacity: 1 });
+          centralWrap.style.opacity = '1';
         } else {
-          centralCalloutLine.setStyle({ opacity: 0.20 });
-          centralCalloutDot.setStyle({ opacity: 0.20, fillOpacity: 0.20 });
+          centralWrap.style.opacity = '0.20';
         }
       }
 
@@ -2858,6 +2909,7 @@
 
       map.invalidateSize();
       centerMapBounds();
+      updateCentralLineHeight();
 
       // 1. Convert all tiles on screen to true grayscale before html2canvas starts
       convertTilesToGrayscale(document);
@@ -2921,6 +2973,13 @@
 
           // 2. Ensure all cloned tiles are also pure grayscale
           convertTilesToGrayscale(clonedDoc);
+
+          // 3. Ensure cloned Central Jakarta callout line height matches computed height
+          const clonedLine = clonedDoc.getElementById('centralLineDom');
+          const origLine = document.getElementById('centralLineDom');
+          if (clonedLine && origLine) {
+            clonedLine.style.height = origLine.style.height;
+          }
         }
       }).then(canvas => {
         const link = document.createElement('a');
