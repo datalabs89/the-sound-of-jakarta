@@ -166,48 +166,92 @@
     }
 
     /* SUMMARY STATS BAR */
+    /* SUMMARY KPI METRICS BAR & INDEPENDENT CARDS */
     .stats-bar {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
-      gap: 12px;
-      background: rgba(255,255,255,0.85);
-      border: 1px solid #DFD8CB;
-      border-radius: 3px;
-      padding: 14px 18px;
+      gap: 10px;
       margin-bottom: 20px;
     }
 
     .stat-box {
-      border-right: 1px solid #E6E0D4;
-      padding-right: 10px;
+      background: rgba(255, 255, 255, 0.94);
+      border: 1px solid #DFD8CB;
+      border-radius: 4px;
+      padding: 12px 15px;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+      position: relative;
     }
-    .stat-box:last-child {
-      border-right: none;
-      padding-right: 0;
+
+    .stat-box:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+    }
+
+    .stat-box.anies {
+      border-top: 3.5px solid var(--c-anies);
+      background: #FAF3F5;
+      border-color: #E6D5D9;
+    }
+
+    .stat-box.prabowo {
+      border-top: 3.5px solid var(--c-prabowo);
+      background: #F3F6FA;
+      border-color: #D5E1EC;
+    }
+
+    .stat-box.ganjar {
+      border-top: 3.5px solid var(--c-ganjar);
+      background: #F7F3F6;
+      border-color: #E1D6DE;
+    }
+
+    .stat-box.battleground {
+      border-top: 3.5px solid var(--c-close);
+      background: #FAF5EE;
+      border-color: #ECDDC9;
     }
 
     .stat-label {
-      font-size: 0.74rem;
-      font-weight: 700;
+      font-size: 0.73rem;
+      font-weight: 800;
       text-transform: uppercase;
-      letter-spacing: 0.06em;
-      color: var(--dw-muted);
-      margin-bottom: 3px;
+      letter-spacing: 0.05em;
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .stat-box.anies .stat-label { color: #7A283C; }
+    .stat-box.prabowo .stat-label { color: #2D557B; }
+    .stat-box.ganjar .stat-label { color: #5A3852; }
+    .stat-box.battleground .stat-label { color: #9C5516; }
+
+    .stat-indicator {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      display: inline-block;
+      flex-shrink: 0;
     }
 
     .stat-val {
       font-size: 1.30rem;
       font-weight: 700;
-      color: #111;
+      color: #111111;
       display: flex;
       align-items: baseline;
       gap: 5px;
+      font-variant-numeric: tabular-nums;
+      margin-bottom: 2px;
     }
 
     .stat-sub {
-      font-size: 0.78rem;
+      font-size: 0.76rem;
       font-weight: 500;
-      color: #555;
+      color: #555555;
+      line-height: 1.35;
     }
 
     /* 6-COLUMN ADMINISTRATIVE CITY SUMMARY GRID */
@@ -1348,26 +1392,26 @@
 
       <!-- SUMMARY KPI METRICS -->
       <div class="stats-bar">
-        <div class="stat-box">
-          <div class="stat-label">01 Anies - Muhaimin</div>
+        <div class="stat-box anies">
+          <div class="stat-label"><span class="stat-indicator" style="background: var(--c-anies);"></span>01 Anies - Muhaimin</div>
           <div class="stat-val">41.64% <span class="stat-sub">(2,338,237 votes)</span></div>
           <div class="stat-sub">Leading in <b>119</b> Villages (45.6%)</div>
         </div>
 
-        <div class="stat-box">
-          <div class="stat-label">02 Prabowo - Gibran</div>
+        <div class="stat-box prabowo">
+          <div class="stat-label"><span class="stat-indicator" style="background: var(--c-prabowo);"></span>02 Prabowo - Gibran</div>
           <div class="stat-val">41.15% <span class="stat-sub">(2,311,122 votes)</span></div>
           <div class="stat-sub">Leading in <b>105</b> Villages (40.2%)</div>
         </div>
 
-        <div class="stat-box">
-          <div class="stat-label">03 Ganjar - Mahfud</div>
+        <div class="stat-box ganjar">
+          <div class="stat-label"><span class="stat-indicator" style="background: var(--c-ganjar);"></span>03 Ganjar - Mahfud</div>
           <div class="stat-val">17.21% <span class="stat-sub">(966,547 votes)</span></div>
           <div class="stat-sub">Leading in <b>2</b> Villages (0.8%)</div>
         </div>
 
-        <div class="stat-box">
-          <div class="stat-label">Battleground (&lt;2% diff)</div>
+        <div class="stat-box battleground">
+          <div class="stat-label"><span class="stat-indicator" style="background: var(--c-close);"></span>Battleground (&lt;2% diff)</div>
           <div class="stat-val">35 <span class="stat-sub">Villages</span></div>
           <div class="stat-sub">13.4% of Mainland Jakarta</div>
         </div>
