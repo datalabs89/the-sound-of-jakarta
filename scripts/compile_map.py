@@ -1763,33 +1763,33 @@ html_content = f'''<!DOCTYPE html>
 
       <h1 class="dw-headline">The Voice of Jakarta</h1>
       <p class="dw-subheadline">
-        Across 261 mainland urban villages, Prabowo and Anies divide the capital's presidential electoral map
+        Across 261 mainland urban villages, Anies captured territorial breadth (132 villages) while Prabowo commanded high-turnout hubs and 21 battlegrounds
       </p>
 
       <!-- SUMMARY KPI METRICS -->
       <div class="stats-bar">
         <div class="stat-box anies">
           <div class="stat-label"><span class="stat-indicator" style="background: var(--c-anies);"></span>01 Anies - Muhaimin</div>
-          <div class="stat-val">41.64% <span class="stat-sub">(2,338,237 votes)</span></div>
-          <div class="stat-sub">Leading in <b>119</b> Villages (45.6%)</div>
+          <div class="stat-val">132 <span class="stat-sub">Villages (50.6%)</span></div>
+          <div class="stat-sub">119 Solid (&gt;2%) &middot; 13 Battleground &middot; 41.6% Votes</div>
         </div>
 
         <div class="stat-box prabowo">
           <div class="stat-label"><span class="stat-indicator" style="background: var(--c-prabowo);"></span>02 Prabowo - Gibran</div>
-          <div class="stat-val">41.15% <span class="stat-sub">(2,311,122 votes)</span></div>
-          <div class="stat-sub">Leading in <b>105</b> Villages (40.2%)</div>
+          <div class="stat-val">126 <span class="stat-sub">Villages (48.3%)</span></div>
+          <div class="stat-sub">105 Solid (&gt;2%) &middot; 21 Battleground &middot; 41.2% Votes</div>
         </div>
 
         <div class="stat-box ganjar">
           <div class="stat-label"><span class="stat-indicator" style="background: var(--c-ganjar);"></span>03 Ganjar - Mahfud</div>
-          <div class="stat-val">17.21% <span class="stat-sub">(966,547 votes)</span></div>
-          <div class="stat-sub">Leading in <b>2</b> Villages (0.8%)</div>
+          <div class="stat-val">3 <span class="stat-sub">Villages (1.1%)</span></div>
+          <div class="stat-sub">2 Solid (&gt;2%) &middot; 1 Battleground &middot; 17.2% Votes</div>
         </div>
 
         <div class="stat-box battleground">
           <div class="stat-label"><span class="stat-indicator" style="background: var(--c-close);"></span>Battleground (&lt;2% diff)</div>
-          <div class="stat-val">35 <span class="stat-sub">Villages</span></div>
-          <div class="stat-sub">13.4% of Mainland Jakarta</div>
+          <div class="stat-val">35 <span class="stat-sub">Villages (13.4%)</span></div>
+          <div class="stat-sub">02 won 21 &middot; 01 won 13 &middot; 03 won 1</div>
         </div>
       </div>
 
@@ -1852,13 +1852,13 @@ html_content = f'''<!DOCTYPE html>
 
       <!-- DEDICATED STORYLINE STRIP -->
       <div class="storyline-strip">
-        <div class="story-card prabowo">
-          <strong><svg class="dw-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-2px; margin-right:4px;"><circle cx="12" cy="5" r="3"/><line x1="12" y1="22" x2="12" y2="8"/><path d="M5 12H2a10 10 0 0 0 20 0h-3"/></svg>Northern Ports & Western Belt:</strong>
-          Prabowo-Gibran established decisive commanding leads across coastal industrial ports and western commercial urban villages.
-        </div>
         <div class="story-card anies">
-          <strong><svg class="dw-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-2px; margin-right:4px;"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Eastern & Southern Residential Bastion:</strong>
-          Anies-Muhaimin captured substantial momentum across high-density residential belts in East and South Jakarta.
+          <strong><svg class="dw-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-2px; margin-right:4px;"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>01 Territorial Majority (132 of 261 Villages):</strong>
+          Anies-Muhaimin captured the widest geographical footprint across the capital (50.6% of villages), dominating high-density residential belts in South and East Jakarta.
+        </div>
+        <div class="story-card prabowo">
+          <strong><svg class="dw-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-2px; margin-right:4px;"><circle cx="12" cy="5" r="3"/><line x1="12" y1="22" x2="12" y2="8"/><path d="M5 12H2a10 10 0 0 0 20 0h-3"/></svg>02 Megavillage Turnout & Swing Edge (126 Villages):</strong>
+          Prabowo-Gibran secured the provincial popular vote through decisive margins in massive turnout coastal/western hubs (e.g. Kapuk) and winning 21 of 35 close battlegrounds.
         </div>
       </div>
 
@@ -2140,7 +2140,7 @@ html_content = f'''<!DOCTYPE html>
         
         const tooltipContent = `
           <div class="dw-tt-title">${{p.kelurahan}}</div>
-          <div class="dw-tt-sub"><span class="tt-geo">${{p.kecamatan}}, ${{p.kota}}</span><span class="tt-margin">${{p.margin_str}}</span></div>
+          <div class="dw-tt-sub"><span class="tt-geo">${{p.kecamatan}}, ${{p.kota}}</span><span class="tt-margin">${{p.margin_str}}${{p.diff <= 2.0 ? ' &bull; Battleground' : ''}}</span></div>
           
           <div class="dw-tt-row ${{p1Bold}}">
             <span class="c-cand-name">01 Anies - Muhaimin</span>
@@ -2850,7 +2850,7 @@ html_content = f'''<!DOCTYPE html>
       let p3Bold = (p.pct_ganjar >= p.pct_anies && p.pct_ganjar >= p.pct_prabowo) ? "lead" : "";
 
       document.getElementById('drawerTitle').innerText = p.kelurahan;
-      document.getElementById('drawerSub').innerHTML = `<span class="tt-geo">${{p.kecamatan}}, ${{p.kota}}</span><span class="tt-margin">${{p.margin_str}}</span>`;
+      document.getElementById('drawerSub').innerHTML = `<span class="tt-geo">${{p.kecamatan}}, ${{p.kota}}</span><span class="tt-margin">${{p.margin_str}}${{p.diff <= 2.0 ? ' &bull; Battleground' : ''}}</span>`;
 
       document.getElementById('drawerBody').innerHTML = `
         <div class="dw-tt-row ${{p1Bold}}">
